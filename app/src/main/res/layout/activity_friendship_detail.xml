@@ -42,8 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="160dp"
                     android:layout_gravity="center"
-                    android:textColor="#FFFFFF"
-                    android:textSize="25sp"
+                    android:textSize="40sp"
                     android:lineSpacingMultiplier="1.2"
                     android:gravity="center"
                     />
@@ -60,11 +59,18 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v7.widget.RecyclerView
+
+    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/transaction_list"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:name="com.tbbr.tbbr.transactionListFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        app:layoutManager="LinearLayoutManager"
+        tools:context=".FriendshipDetailActivity"
+        tools:listitem="@layout/transaction_item_view"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

@@ -4,6 +4,7 @@ import com.gustavofao.jsonapi.Annotations.Type;
 import com.gustavofao.jsonapi.Models.Resource;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /**
  * Created by Maaz on 2016-04-20.
@@ -29,11 +30,15 @@ public class Transaction extends Resource {
         return amount;
     }
 
-    public String getFormattedAmount() {
-        DecimalFormat decimalFormat = new DecimalFormat("0.##");
-        double amount = this.amount / 100;
-        String formattedAmount = decimalFormat.format(amount);
+    public User getSender() {
+        return sender;
+    }
 
-        return "$" + formattedAmount;
+    public String getFormattedAmount() {
+        double amount = ((double) this.amount) / 100;
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+        String moneyString = formatter.format(amount);
+
+        return moneyString;
     }
 }

@@ -13,6 +13,7 @@ import com.joanzapata.iconify.fonts.MaterialModule;
 import com.tbbr.tbbr.api.APIService;
 import com.tbbr.tbbr.models.Friendship;
 import com.tbbr.tbbr.models.Token;
+import com.tbbr.tbbr.models.Transaction;
 import com.tbbr.tbbr.models.User;
 
 import java.io.IOException;
@@ -99,7 +100,7 @@ public class TBBRApplication extends Application {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(getResources().getString(R.string.base_url))
-                .addConverterFactory(JSONConverterFactory.create(User.class, Friendship.class))
+                .addConverterFactory(JSONConverterFactory.create(User.class, Friendship.class, Transaction.class))
                 .client(client)
                 .build();
 

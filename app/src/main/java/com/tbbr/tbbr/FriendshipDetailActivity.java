@@ -28,6 +28,7 @@ import com.squareup.picasso.Picasso;
 import com.tbbr.tbbr.api.APIService;
 import com.tbbr.tbbr.models.Friendship;
 import com.tbbr.tbbr.models.Transaction;
+import com.tbbr.tbbr.models.User;
 
 import java.util.List;
 
@@ -81,11 +82,16 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
 
         CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+
         if (appBarLayout != null) {
             appBarLayout.setTitle(friendship.getFriend().getName());
         }
 
-        ImageView backdrop = (ImageView) this.findViewById(R.id.friend_image_backdrop);
+        TextView balance = (TextView) findViewById(R.id.friendship_page_balance);
+        balance.setText(friendship.getFormattedBalance());
+        balance.setTextColor(friendship.getBalanceColor());
+
+        ImageView backdrop = (ImageView) findViewById(R.id.friend_image_backdrop);
 
         Picasso.with(this)
                 .load(friendship.getFriend().getAvatarUrl())
@@ -168,7 +174,11 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = (Transaction) this.transactions.get(position);
-            holder.amount.setText(holder.mItem.getFormattedAmount());
+            String senderName = holder.mItem.getSender().getName();
+            String amount = holder.mItem.getFormattedAmount();
+            String type = "paid";
+            String transactionContent = senderName + " " + type + " " + amount;
+            holder.amount.setText(transactionContent);
 
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
