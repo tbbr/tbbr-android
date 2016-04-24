@@ -30,6 +30,8 @@ public class Friendship extends Resource {
         return friend;
     }
 
+    public User getUser() { return user; }
+
     public int getBalance() {
         return balance;
     }

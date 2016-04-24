@@ -49,6 +49,13 @@
                 android:value=".FriendshipListActivity" />
         </activity>
 
+        <activity
+            android:name=".TransactionCreateActivity"
+            android:label="@string/title_transaction_create"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".FriendshipDetailActivity">
+        </activity>
+
     </application>
 
 </manifest>

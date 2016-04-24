@@ -78,8 +78,9 @@ public class FriendshipListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Context context = view.getContext();
+                Intent intent = new Intent(context, TransactionCreateActivity.class);
+                context.startActivity(intent);
             }
         });
     }
@@ -154,7 +155,7 @@ public class FriendshipListActivity extends AppCompatActivity {
             holder.friendBalance.setText(holder.mItem.getFormattedBalance());
 
             Picasso.with(FriendshipListActivity.this)
-                    .load(holder.mItem.getFriend().getAvatarUrl())
+                    .load(holder.mItem.getFriend().getAvatarUrl("normal"))
                     .placeholder(context.getResources().getDrawable(R.drawable.default_profile_picture))
                     .error(context.getResources().getDrawable(R.drawable.default_profile_picture))
                     .into(holder.friendImage);

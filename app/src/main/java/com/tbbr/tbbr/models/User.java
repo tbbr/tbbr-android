@@ -1,7 +1,6 @@
 package com.tbbr.tbbr.models;
 
 
-import com.gustavofao.jsonapi.Annotations.Id;
 import com.gustavofao.jsonapi.Annotations.Type;
 import com.gustavofao.jsonapi.Models.Resource;
 
@@ -24,8 +23,22 @@ public class User extends Resource {
     }
 
 
-    public String getAvatarUrl() {
-        return "https://graph.facebook.com/" + externalId + "/picture?type=large";
+    public String getAvatarUrl(String size) {
+        String maxWidth = "1000";
+        switch(size) {
+            case "normal":
+                return "https://graph.facebook.com/" + externalId + "/picture?type=large";
+            case "large":
+                return "https://graph.facebook.com/" + externalId + "/picture?width=" + maxWidth;
+            default:
+                return "https://graph.facebook.com/" + externalId + "/picture?type=large";
+        }
+    }
+
+
+    @Override
+    public String toString() {
+        return name;
     }
 
 }

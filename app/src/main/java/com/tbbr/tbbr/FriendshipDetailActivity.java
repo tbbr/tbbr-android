@@ -51,8 +51,6 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
         friendship = (Friendship) app.getFriendships().get(position);
 
-        System.out.println(friendship.getFriendshipDataId());
-
         makeTransactionRequest();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
@@ -67,8 +65,10 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    Context context = view.getContext();
+                    Intent intent = new Intent(context, TransactionCreateActivity.class);
+                    intent.putExtra("friendship_index", position);
+                    context.startActivity(intent);
                 }
             });
         }
@@ -94,7 +94,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         ImageView backdrop = (ImageView) findViewById(R.id.friend_image_backdrop);
 
         Picasso.with(this)
-                .load(friendship.getFriend().getAvatarUrl())
+                .load(friendship.getFriend().getAvatarUrl("large"))
                 .placeholder(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(backdrop);
