@@ -53,9 +53,6 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
         friendship = (Friendship) app.getFriendships().get(position);
 
-//        makeTransactionRequest();
-//        makeFriendshipRequest();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
