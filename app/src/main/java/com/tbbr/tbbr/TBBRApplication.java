@@ -35,6 +35,8 @@ public class TBBRApplication extends Application {
 
     Token loggedInUsersToken;
 
+    // TODO: Use a hashmap of <friendshipId => Friendship> to make it easier
+    // to potentially update friendship cache at a later date.
     List<Resource> friendships;
 
     public void onCreate() {

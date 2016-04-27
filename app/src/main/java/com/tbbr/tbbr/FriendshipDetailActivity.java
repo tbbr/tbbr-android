@@ -41,6 +41,8 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
     private Friendship friendship;
 
+    TextView balance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +53,8 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
         friendship = (Friendship) app.getFriendships().get(position);
 
-        makeTransactionRequest();
+//        makeTransactionRequest();
+//        makeFriendshipRequest();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
@@ -87,7 +90,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             appBarLayout.setTitle(friendship.getFriend().getName());
         }
 
-        TextView balance = (TextView) findViewById(R.id.friendship_page_balance);
+        balance = (TextView) findViewById(R.id.friendship_page_balance);
         balance.setText(friendship.getFormattedBalance());
         balance.setTextColor(friendship.getBalanceColor());
 
@@ -99,6 +102,13 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(backdrop);
 
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        makeTransactionRequest();
+        makeFriendshipRequest();
     }
 
     private void makeTransactionRequest() {
@@ -120,6 +130,40 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                     assert recyclerView != null;
 
                     setupRecyclerView((RecyclerView) recyclerView, response.body().getData());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JSONApiObject> call, Throwable t) {
+                Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
+                toast.show();
+
+            }
+        });
+
+    }
+
+    private void makeFriendshipRequest() {
+        final TBBRApplication app = (TBBRApplication) getApplication();
+        APIService service = app.getAPIService();
+
+        Call<JSONApiObject> friendshipReq = service.getFriendship(friendship.getId());
+
+
+        friendshipReq.enqueue(new Callback<JSONApiObject>() {
+            @Override
+            public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
+
+                if (response.body() == null) {
+                    Toast err = Toast.makeText(getApplicationContext(), "Response body was null", Toast.LENGTH_LONG);
+                    err.show();
+                } else {
+                    List<Resource> friendshipList = response.body().getData();
+
+                    friendship = (Friendship) friendshipList.get(0);
+
+                    balance.setText(friendship.getFormattedBalance());
+                    balance.setTextColor(friendship.getBalanceColor());
                 }
             }
 

@@ -14,6 +14,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -26,6 +27,8 @@ public interface APIService {
 
     @GET("friendships")
     Call<JSONApiObject> getFriendships();
+    @GET("friendships/{id}")
+    Call<JSONApiObject> getFriendship(@Path("id") String friendshipId);
 
     @GET("transactions")
     Call<JSONApiObject> getTransactions(@Query("relatedObjectId") int relatedObjectId, @Query("relatedObjectType") String relatedObjectType);

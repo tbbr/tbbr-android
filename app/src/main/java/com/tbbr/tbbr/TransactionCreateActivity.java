@@ -79,7 +79,6 @@ public class TransactionCreateActivity extends AppCompatActivity {
 
         if (toolbar != null && getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//            getSupportActionBar().setDisplayShowHomeEnabled(true);
             toolbar.setTitle(getTitle());
         }
 
