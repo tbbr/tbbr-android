@@ -6,6 +6,8 @@
     android:name="com.tbbr.tbbr.friendshipListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:divider="?android:dividerHorizontal"
+    android:showDividers="middle"
     app:layoutManager="LinearLayoutManager"
     tools:context=".FriendshipListActivity"
     tools:listitem="@layout/friendship_list_content" />

@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#2F2F2F</color>
-    <color name="colorPrimaryDark">#222222</color>
-    <color name="colorAccent">#98D31C</color>
+    <!--<color name="colorPrimary">#2F2F2F</color>-->
+    <!--<color name="colorPrimaryDark">#222222</color>-->
+    <!--<color name="colorAccent">#98D31C</color>-->
+
+    // Primary Color
+    <color name="primaryBase">#98D31C</color>
+    <color name="primaryLight">#AEDF46</color>
+    <color name="primaryLighter">#C8F171</color>
+    <color name="primaryDark">#75A70D</color>
+    <color name="primaryDarker">#598300</color>
+
+    // Secondary Color
+    <color name="secondaryBase">#2F2F2F</color>
+    <color name="secondaryLight">#3B3B3B</color>
+    <color name="secondaryLighter">#4C4C4C</color>
+    <color name="secondaryDark">#222222</color>
+    <color name="secondaryDarker">#040404</color>
+
+    <color name="grey900">#212121</color>
+    <color name="grey800">#424242</color>
+    <color name="grey700">#616161</color>
+    <color name="grey600">#757575</color>
+    <color name="grey500">#9E9E9E</color>
+    <color name="grey400">#BDBDBD</color>
+    <color name="grey300">#E0E0E0</color>
+    <color name="grey200">#EEEEEE</color>
+    <color name="grey100">#F5F5F5</color>
+    <color name="grey50">#FAFAFA</color>
 
 
-    <color name="grey500">#757575</color>
 </resources>

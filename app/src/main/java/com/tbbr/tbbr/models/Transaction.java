@@ -22,6 +22,21 @@ public class Transaction extends Resource {
     private User recipient;
     private User sender;
 
+    // For transforming to and from json
+    public Transaction() {}
+
+    public Transaction(User sender, User recipient, int amount, String memo, String relatedObjectId,
+                String relatedObjectType, String type) {
+        this.sender = sender;
+        this.recipient = recipient;
+        this.amount = amount;
+        this.memo = memo;
+        this.relatedObjectId = Integer.valueOf(relatedObjectId);
+        this.relatedObjectType = relatedObjectType;
+        this.type = type;
+    }
+
+
     public void setAmount(int amount) {
         this.amount = amount;
     }

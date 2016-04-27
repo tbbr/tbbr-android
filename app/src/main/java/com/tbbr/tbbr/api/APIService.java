@@ -3,6 +3,7 @@ package com.tbbr.tbbr.api;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.tbbr.tbbr.models.Friendship;
 import com.tbbr.tbbr.models.Token;
+import com.tbbr.tbbr.models.Transaction;
 
 import java.util.List;
 
@@ -28,4 +29,6 @@ public interface APIService {
 
     @GET("transactions")
     Call<JSONApiObject> getTransactions(@Query("relatedObjectId") int relatedObjectId, @Query("relatedObjectType") String relatedObjectType);
+    @POST("transactions")
+    Call<JSONApiObject> createTransaction(@Body Transaction transaction);
 }

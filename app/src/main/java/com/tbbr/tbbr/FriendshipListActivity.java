@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.facebook.login.widget.LoginButton;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.squareup.picasso.Picasso;
 import com.tbbr.tbbr.api.APIService;
 import com.tbbr.tbbr.dummy.DummyContent;
@@ -75,6 +78,10 @@ public class FriendshipListActivity extends AppCompatActivity {
         toolbar.setTitle(getTitle());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        fab.setImageDrawable(
+                new IconDrawable(this, MaterialIcons.md_library_add));
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -178,7 +185,7 @@ public class FriendshipListActivity extends AppCompatActivity {
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public final CardView cardView;
+            public final RelativeLayout cardView;
             public final CircleImageView friendImage;
             public final TextView friendName;
             public final TextView friendBalance;
@@ -186,7 +193,7 @@ public class FriendshipListActivity extends AppCompatActivity {
 
             public ViewHolder(View view) {
                 super(view);
-                cardView = (CardView) view.findViewById(R.id.friendship_card);
+                cardView = (RelativeLayout) view.findViewById(R.id.friendship_card);
                 friendImage = (CircleImageView) view.findViewById(R.id.friendship_card_image);
                 friendName = (TextView) view.findViewById(R.id.friendship_card_name);
                 friendBalance = (TextView) view.findViewById(R.id.friendship_card_balance);

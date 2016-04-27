@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/transaction_create_layout_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
@@ -29,7 +30,8 @@
         android:divider="?android:dividerHorizontal"
         android:layout_marginTop="55dp"
         android:showDividers="middle"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:weightSum="1">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -47,9 +49,13 @@
 
             <AutoCompleteTextView
                 android:id="@+id/autocomplete_username_sender"
-                android:layout_width="265dp"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                android:dropDownVerticalOffset="10sp"
+                android:layout_marginLeft="15dp"
+                android:imeOptions="actionNext"
+                android:inputType="text"/>
 
         </LinearLayout>
 
@@ -70,9 +76,12 @@
 
             <AutoCompleteTextView
                 android:id="@+id/autocomplete_username_recipient"
-                android:layout_width="match_parent"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                android:dropDownVerticalOffset="10sp"
+                android:imeOptions="actionNext"
+                android:inputType="text"/>
 
         </LinearLayout>
 
@@ -89,14 +98,51 @@
                 android:text="Amount"
                 android:textColor="@color/grey500"/>
 
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textSize="18sp"
+                android:text="$"
+                android:textColor="@color/grey500"/>
+
             <EditText
-                android:layout_width="match_parent"
+                android:id="@+id/transaction_create_amount"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                android:hint="0.00"/>
 
         </LinearLayout>
 
+
+        <EditText
+            android:id="@+id/transaction_create_memo"
+            android:inputType="textMultiLine"
+            android:lines="8"
+            android:minLines="6"
+            android:gravity="top|start"
+            android:maxLines="10"
+            android:maxLength="@string/max_length_memo"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:scrollbars="vertical"
+            android:hint="Memo..."
+            android:padding="15dp"
+            android:background="@android:color/transparent"/>
+
+
+
     </LinearLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/transaction_create_btn"
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Transaction"
+        android:layout_gravity="bottom"
+        app:backgroundTint="@color/primaryDark"
+        android:textColor="@color/primaryLighter"
+        android:textSize="15sp"/>
 
 </android.support.design.widget.CoordinatorLayout>

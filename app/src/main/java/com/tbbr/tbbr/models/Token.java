@@ -153,8 +153,8 @@ public class Token {
      * @return
      * The userId
      */
-    public Integer getUserId() {
-        return userId;
+    public String getUserId() {
+        return Integer.toString(userId);
     }
 
     /**
