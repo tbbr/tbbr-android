@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import com.tbbr.tbbr.api.APIService;
 import com.tbbr.tbbr.models.Friendship;
 import com.tbbr.tbbr.models.Transaction;
 import com.tbbr.tbbr.models.User;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;
 
@@ -125,6 +127,10 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 } else {
                     View recyclerView = findViewById(R.id.transaction_list);
                     assert recyclerView != null;
+
+                    ((RecyclerView)recyclerView).addItemDecoration(
+                            new HorizontalDividerItemDecoration.Builder(FriendshipDetailActivity.this)
+                                    .build());
 
                     setupRecyclerView((RecyclerView) recyclerView, response.body().getData());
                 }
@@ -247,13 +253,13 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public final CardView cardView;
+            public final RelativeLayout cardView;
             public final TextView amount;
             public Transaction mItem;
 
             public ViewHolder(View view) {
                 super(view);
-                cardView = (CardView) view.findViewById(R.id.transaction_card);
+                cardView = (RelativeLayout) view.findViewById(R.id.transaction_card);
                 amount = (TextView) view.findViewById(R.id.amount);
             }
         }
