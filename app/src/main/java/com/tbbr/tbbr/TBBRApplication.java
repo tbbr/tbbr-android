@@ -3,6 +3,7 @@ package com.tbbr.tbbr;
 import android.app.Application;
 import android.content.SharedPreferences;
 
+import com.facebook.FacebookSdk;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
@@ -45,6 +46,8 @@ public class TBBRApplication extends Application {
         Iconify.with(new MaterialModule());
 
         Stetho.initializeWithDefaults(this);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
 
         Gson converter = new Gson();
