@@ -31,6 +31,7 @@ import com.tbbr.tbbr.api.APIService;
 import com.tbbr.tbbr.dummy.DummyContent;
 import com.tbbr.tbbr.models.Friendship;
 import com.tbbr.tbbr.models.Token;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;
 
@@ -120,9 +121,11 @@ public class FriendshipListActivity extends AppCompatActivity {
                     View recyclerView = findViewById(R.id.friendship_list);
                     assert recyclerView != null;
 
+                    ((RecyclerView)recyclerView).addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipListActivity.this).build());
+
                     app.setFriendships(response.body().getData());
 
-                    setupRecyclerView((RecyclerView) recyclerView, app.getFriendships());
+                    setupRecyclerView((RecyclerView)recyclerView, app.getFriendships());
                 }
             }
 
@@ -130,7 +133,6 @@ public class FriendshipListActivity extends AppCompatActivity {
             public void onFailure(Call<JSONApiObject> call, Throwable t) {
                 Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
                 toast.show();
-
             }
         });
 
@@ -163,6 +165,7 @@ public class FriendshipListActivity extends AppCompatActivity {
             holder.mItem = (Friendship) this.friendships.get(position);
             holder.friendName.setText(holder.mItem.getFriend().getName());
             holder.friendBalance.setText(holder.mItem.getFormattedBalance());
+            holder.friendBalance.setTextColor(holder.mItem.getBalanceColor());
 
             Picasso.with(FriendshipListActivity.this)
                     .load(holder.mItem.getFriend().getAvatarUrl("normal"))

@@ -2,8 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
@@ -17,8 +15,8 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/friendship_card_image"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginEnd="15dp" />
@@ -29,7 +27,7 @@
                 android:id="@+id/friendship_card_name"
                 android:layout_toEndOf="@+id/friendship_card_image"
                 android:layout_alignParentTop="true"
-                android:textSize="30sp"
+                android:textSize="24sp"
                 />
 
             <TextView
@@ -38,6 +36,7 @@
                 android:id="@+id/friendship_card_balance"
                 android:layout_toEndOf="@+id/friendship_card_image"
                 android:layout_below="@+id/friendship_card_name"
+                android:textSize="16sp"
                 />
 
         </RelativeLayout>
