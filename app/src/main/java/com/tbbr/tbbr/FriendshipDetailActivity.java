@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.joanzapata.iconify.IconDrawable;
@@ -74,7 +75,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         }
 
 
-        // Show the Up button in the action bar.
+        // Show the back button in the action bar.
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -120,8 +121,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
 
                 if (response.body() == null) {
-                    Toast err = Toast.makeText(getApplicationContext(), "Response body was null", Toast.LENGTH_LONG);
-                    err.show();
+                    handleNullBody(response);
                 } else {
                     View recyclerView = findViewById(R.id.transaction_list);
                     assert recyclerView != null;
@@ -152,8 +152,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
 
                 if (response.body() == null) {
-                    Toast err = Toast.makeText(getApplicationContext(), "Response body was null", Toast.LENGTH_LONG);
-                    err.show();
+                    handleNullBody(response);
                 } else {
                     List<Resource> friendshipList = response.body().getData();
 
@@ -188,6 +187,19 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void handleNullBody(Response response) {
+        Toast err = Toast.makeText(getApplicationContext(), "Response body was null", Toast.LENGTH_LONG);
+        err.show();
+
+        if (response.raw().code() == 401) {
+            LoginManager.getInstance().logOut();
+
+            Intent loginIntent = new Intent(FriendshipDetailActivity.this, LoginActivity.class);
+            FriendshipDetailActivity.this.startActivity(loginIntent);
+            FriendshipDetailActivity.this.finish();
+        }
     }
 
 

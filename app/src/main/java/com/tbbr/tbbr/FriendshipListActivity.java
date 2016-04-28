@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.LoginButton;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
@@ -108,6 +109,8 @@ public class FriendshipListActivity extends AppCompatActivity {
                     err.show();
 
                     if (response.raw().code() == 401) {
+                        LoginManager.getInstance().logOut();
+
                         Intent loginIntent = new Intent(FriendshipListActivity.this, LoginActivity.class);
                         FriendshipListActivity.this.startActivity(loginIntent);
                         FriendshipListActivity.this.finish();

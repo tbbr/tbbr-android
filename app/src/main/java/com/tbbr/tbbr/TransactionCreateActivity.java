@@ -18,6 +18,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.tbbr.tbbr.api.APIService;
@@ -146,7 +147,16 @@ public class TransactionCreateActivity extends AppCompatActivity {
             public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
 
                 if (response.body() == null) {
-                    Snackbar.make(layoutContainer, "Something went wrong", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(layoutContainer, "Transaction not created! Must be logged in!", Snackbar.LENGTH_LONG).show();
+                    if (response.raw().code() == 401) {
+                        LoginManager.getInstance().logOut();
+
+                        Intent loginIntent = new Intent(TransactionCreateActivity.this, LoginActivity.class);
+                        TransactionCreateActivity.this.startActivity(loginIntent);
+                        TransactionCreateActivity.this.finish();
+                    } else {
+                        Snackbar.make(layoutContainer, "Something went wrong", Snackbar.LENGTH_LONG).show();
+                    }
                 } else {
                     Snackbar.make(layoutContainer, "Transaction Created!", Snackbar.LENGTH_SHORT).show();
                     // Finish this activity after transaction has been created
