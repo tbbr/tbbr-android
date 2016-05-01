@@ -38,11 +38,11 @@ public class Friendship extends Resource {
 
     public int getBalanceColor() {
         if (balance == 0) {
-            return Color.GRAY;
+            return Color.parseColor("#ECF0F1");
         } else if (balance > 0) {
-            return Color.GREEN;
+            return Color.parseColor("#2ECC71");
         } else {
-            return Color.RED;
+            return Color.parseColor("#E46A6B");
         }
     }
 

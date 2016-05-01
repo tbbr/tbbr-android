@@ -35,6 +35,8 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,6 +83,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setSubtitle(friendship.getFormattedBalance());
         }
 
 
@@ -95,12 +98,21 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         balance.setTextColor(friendship.getBalanceColor());
 
         ImageView backdrop = (ImageView) findViewById(R.id.friend_image_backdrop);
+        CircleImageView mainImage = (CircleImageView) findViewById(R.id.friendship_page_main_img);
 
         Picasso.with(this)
-                .load(friendship.getFriend().getAvatarUrl("large"))
+                .load(friendship.getFriend().getAvatarUrl("normal"))
+                .transform(new BlurTransformation(this, 25))
                 .placeholder(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(backdrop);
+
+        Picasso.with(FriendshipDetailActivity.this)
+                .load(friendship.getFriend().getAvatarUrl("normal"))
+                .placeholder(this.getResources().getDrawable(R.drawable.default_profile_picture))
+                .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
+                .into(mainImage);
+
 
     }
 

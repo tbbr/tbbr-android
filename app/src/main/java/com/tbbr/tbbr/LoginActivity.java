@@ -3,6 +3,7 @@ package com.tbbr.tbbr;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -11,6 +12,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.tbbr.tbbr.api.APIService;
@@ -44,8 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 String accessToken = loginResult.getAccessToken().getToken();
@@ -54,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                         "Auth Token: " + loginResult.getAccessToken().getToken());
 
 
-                APIService service = ((TBBRApplication)getApplication()).getUnauthenticatedApiService();
+                APIService service = ((TBBRApplication) getApplication()).getUnauthenticatedApiService();
 
                 Call<Token> loginReq = service.grantToken("facebook_access_token", accessToken);
 
@@ -72,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                             toast.show();
 
 
-                            ((TBBRApplication)getApplication()).setUserLoggedIn(response.body());
+                            ((TBBRApplication) getApplication()).setUserLoggedIn(response.body());
 
                             Intent intent = new Intent(LoginActivity.this, FriendshipListActivity.class);
 
@@ -99,6 +100,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onError(FacebookException e) {
+                e.printStackTrace();
                 info.setText("Login attempt failed.");
             }
         });
@@ -107,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }

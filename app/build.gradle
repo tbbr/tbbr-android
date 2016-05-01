@@ -50,6 +50,7 @@ dependencies {
 
 
     compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'jp.wasabeef:picasso-transformations:2.1.0'
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.joanzapata.iconify:android-iconify-material:2.2.2'
 
