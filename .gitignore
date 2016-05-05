@@ -6,3 +6,6 @@
 .DS_Store
 /build
 /captures
+
+# ignore all apk files
+*.apk
