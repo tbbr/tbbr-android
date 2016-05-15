@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 String accessToken = loginResult.getAccessToken().getToken();
