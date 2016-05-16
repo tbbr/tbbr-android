@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,8 @@ import com.tbbr.tbbr.models.Friendship;
 import com.tbbr.tbbr.models.Transaction;
 import com.tbbr.tbbr.models.User;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import net.cachapa.expandablelayout.ExpandableLinearLayout;
 
 import java.util.List;
 
@@ -248,15 +251,21 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             String senderName = holder.mItem.getSender().getName();
             String amount = holder.mItem.getFormattedAmount();
             String type = "paid";
-            String transactionContent = senderName + " " + type + " " + amount;
-            holder.amount.setText(transactionContent);
+            String memo = holder.mItem.getMemo();
 
-            holder.cardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Expand
-                }
-            });
+            String month = holder.mItem.getCreatedAtMonth();
+            String day = holder.mItem.getCreatedAtDay();
+            String year = holder.mItem.getCreatedAtYear();
+
+            holder.senderName.setText(senderName);
+            holder.type.setText(type);
+            holder.amount.setText(amount);
+
+            holder.memo.setText(memo);
+
+            holder.createdAtMonth.setText(month);
+            holder.createdAtDay.setText(day);
+            holder.createdAtYear.setText(year);
         }
 
         @Override
@@ -265,14 +274,30 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public final RelativeLayout cardView;
+            public final LinearLayout cardView;
+            public final TextView senderName;
+            public final TextView type;
             public final TextView amount;
+            public final TextView memo;
+
+            public final TextView createdAtMonth;
+            public final TextView createdAtDay;
+            public final TextView createdAtYear;
+
             public Transaction mItem;
 
             public ViewHolder(View view) {
                 super(view);
-                cardView = (RelativeLayout) view.findViewById(R.id.transaction_card);
-                amount = (TextView) view.findViewById(R.id.amount);
+                cardView = (LinearLayout) view.findViewById(R.id.transaction_card);
+
+                senderName = (TextView) view.findViewById(R.id.transaction_sender_name);
+                type = (TextView) view.findViewById(R.id.transaction_type);
+                amount = (TextView) view.findViewById(R.id.transaction_amount);
+                memo = (TextView) view.findViewById(R.id.transaction_memo);
+
+                createdAtMonth = (TextView) view.findViewById(R.id.vertical_date_month);
+                createdAtDay = (TextView) view.findViewById(R.id.vertical_date_day);
+                createdAtYear = (TextView) view.findViewById(R.id.vertical_date_year);
             }
         }
     }
