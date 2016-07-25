@@ -49,7 +49,6 @@ public class TBBRApplication extends Application {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-
         Gson converter = new Gson();
         SharedPreferences preferences = getSharedPreferences("AUTH_PREFERENCES", MODE_PRIVATE);
 
@@ -78,8 +77,6 @@ public class TBBRApplication extends Application {
     }
 
     public void setUserLoggedIn(Token token) {
-        Token oldVal = loggedInUsersToken;
-
         this.loggedInUsersToken = token;
 
         if (token != null) {

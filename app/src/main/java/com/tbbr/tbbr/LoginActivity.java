@@ -44,7 +44,9 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = (LoginButton)findViewById(R.id.fbLoginButton);
         loginProgressBar = (ProgressBar)findViewById(R.id.loginProgressBar);
 
-        loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        if (loginProgressBar != null) {
+            loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        }
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -105,7 +107,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
