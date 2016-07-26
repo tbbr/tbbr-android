@@ -1,4 +1,4 @@
-package com.tbbr.tbbr;
+package me.tbbr.tbbr;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,7 +6,6 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
@@ -21,10 +20,10 @@ import android.widget.Toast;
 import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
-import com.tbbr.tbbr.api.APIService;
-import com.tbbr.tbbr.models.Friendship;
-import com.tbbr.tbbr.models.Transaction;
-import com.tbbr.tbbr.models.User;
+import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.models.Friendship;
+import me.tbbr.tbbr.models.Transaction;
+import me.tbbr.tbbr.models.User;
 
 import java.util.List;
 

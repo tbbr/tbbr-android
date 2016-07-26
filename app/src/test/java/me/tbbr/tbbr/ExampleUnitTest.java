@@ -1,4 +1,4 @@
-package com.tbbr.tbbr;
+package me.tbbr.tbbr;
 
 import org.junit.Test;
 

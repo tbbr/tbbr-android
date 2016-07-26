@@ -1,4 +1,4 @@
-package com.tbbr.tbbr.models;
+package me.tbbr.tbbr.models;
 
 
 import com.gustavofao.jsonapi.Annotations.Type;

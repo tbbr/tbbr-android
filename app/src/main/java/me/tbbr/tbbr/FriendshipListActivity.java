@@ -1,36 +1,30 @@
-package com.tbbr.tbbr;
+package me.tbbr.tbbr;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
 import com.facebook.login.LoginManager;
-import com.facebook.login.widget.LoginButton;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.squareup.picasso.Picasso;
-import com.tbbr.tbbr.api.APIService;
-import com.tbbr.tbbr.dummy.DummyContent;
-import com.tbbr.tbbr.models.Friendship;
-import com.tbbr.tbbr.models.Token;
+import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.models.Friendship;
+
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;

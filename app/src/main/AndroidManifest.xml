@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tbbr.tbbr">
+    package="me.tbbr.tbbr">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".TBBRApplication"
+        android:name="me.tbbr.tbbr.TBBRApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -21,12 +21,12 @@
             android:label="@string/app_name" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name="me.tbbr.tbbr.LoginActivity"
             android:label="@string/title_login"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name=".FriendshipListActivity"
+            android:name="me.tbbr.tbbr.FriendshipListActivity"
             android:label="tbbr"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -36,22 +36,20 @@
         </activity>
 
         <activity
-            android:name=".FriendshipDetailActivity"
+            android:name="me.tbbr.tbbr.FriendshipDetailActivity"
             android:label="@string/title_friendship_detail"
-            android:parentActivityName=".FriendshipListActivity"
+            android:parentActivityName="me.tbbr.tbbr.FriendshipListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FriendshipListActivity" />
+                android:value="me.tbbr.tbbr.FriendshipListActivity" />
         </activity>
 
         <activity
-            android:name=".TransactionCreateActivity"
+            android:name="me.tbbr.tbbr.TransactionCreateActivity"
             android:label="@string/title_transaction_create"
             android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".FriendshipDetailActivity">
+            android:parentActivityName="me.tbbr.tbbr.FriendshipDetailActivity">
         </activity>
-
     </application>
-
 </manifest>

@@ -1,10 +1,8 @@
-package com.tbbr.tbbr.models;
+package me.tbbr.tbbr.models;
 
 import com.gustavofao.jsonapi.Annotations.Type;
 import com.gustavofao.jsonapi.Models.Resource;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;

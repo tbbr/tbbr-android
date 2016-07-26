@@ -1,22 +1,18 @@
-package com.tbbr.tbbr;
+package me.tbbr.tbbr;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.tbbr.tbbr.api.APIService;
-import com.tbbr.tbbr.models.Token;
+import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.models.Token;
 
 import retrofit2.Call;
 import retrofit2.Response;

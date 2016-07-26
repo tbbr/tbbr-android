@@ -1,18 +1,15 @@
-package com.tbbr.tbbr.api;
+package me.tbbr.tbbr.api;
 
 import com.gustavofao.jsonapi.Models.JSONApiObject;
-import com.tbbr.tbbr.models.Friendship;
-import com.tbbr.tbbr.models.Token;
-import com.tbbr.tbbr.models.Transaction;
 
-import java.util.List;
+import me.tbbr.tbbr.models.Token;
+import me.tbbr.tbbr.models.Transaction;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;

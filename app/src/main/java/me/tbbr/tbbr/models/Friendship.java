@@ -1,4 +1,4 @@
-package com.tbbr.tbbr.models;
+package me.tbbr.tbbr.models;
 
 
 import android.graphics.Color;
@@ -6,7 +6,6 @@ import android.graphics.Color;
 import com.gustavofao.jsonapi.Annotations.Type;
 import com.gustavofao.jsonapi.Models.Resource;
 
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 /**

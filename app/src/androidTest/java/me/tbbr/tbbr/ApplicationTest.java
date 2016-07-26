@@ -1,4 +1,4 @@
-package com.tbbr.tbbr;
+package me.tbbr.tbbr;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

@@ -1,4 +1,4 @@
-package com.tbbr.tbbr;
+package me.tbbr.tbbr;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,9 +25,9 @@ import com.gustavofao.jsonapi.Models.Resource;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.squareup.picasso.Picasso;
-import com.tbbr.tbbr.api.APIService;
-import com.tbbr.tbbr.models.Friendship;
-import com.tbbr.tbbr.models.Transaction;
+import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.models.Friendship;
+import me.tbbr.tbbr.models.Transaction;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;

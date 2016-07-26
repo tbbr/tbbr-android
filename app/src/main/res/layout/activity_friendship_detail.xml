@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".FriendshipDetailActivity"
+    tools:context="me.tbbr.tbbr.FriendshipDetailActivity"
     tools:ignore="MergeRootFrame">
 
     <android.support.design.widget.AppBarLayout
@@ -73,11 +73,11 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/transaction_list"
-        android:name="com.tbbr.tbbr.transactionListFragment"
+        android:name="me.tbbr.tbbr.transactionListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
-        tools:context=".FriendshipDetailActivity"
+        tools:context="me.tbbr.tbbr.FriendshipDetailActivity"
         tools:listitem="@layout/transaction_item_view"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 

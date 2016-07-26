@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/friendship_list"
-    android:name="com.tbbr.tbbr.friendshipListFragment"
+    android:name="me.tbbr.tbbr.friendshipListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:divider="?android:dividerHorizontal"
     android:showDividers="middle"
     app:layoutManager="LinearLayoutManager"
-    tools:context=".FriendshipListActivity"
+    tools:context="me.tbbr.tbbr.FriendshipListActivity"
     tools:listitem="@layout/friendship_list_content" />

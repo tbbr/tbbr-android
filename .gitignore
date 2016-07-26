@@ -9,3 +9,5 @@
 
 # ignore all apk files
 *.apk
+
+/app/google-services.json

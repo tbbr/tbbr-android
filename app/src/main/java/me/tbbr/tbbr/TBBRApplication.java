@@ -1,4 +1,4 @@
-package com.tbbr.tbbr;
+package me.tbbr.tbbr;
 
 import android.app.Application;
 import android.content.SharedPreferences;
@@ -11,11 +11,11 @@ import com.gustavofao.jsonapi.Models.Resource;
 import com.gustavofao.jsonapi.Retrofit.JSONConverterFactory;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
-import com.tbbr.tbbr.api.APIService;
-import com.tbbr.tbbr.models.Friendship;
-import com.tbbr.tbbr.models.Token;
-import com.tbbr.tbbr.models.Transaction;
-import com.tbbr.tbbr.models.User;
+import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.models.Friendship;
+import me.tbbr.tbbr.models.Token;
+import me.tbbr.tbbr.models.Transaction;
+import me.tbbr.tbbr.models.User;
 
 import java.io.IOException;
 import java.util.List;
