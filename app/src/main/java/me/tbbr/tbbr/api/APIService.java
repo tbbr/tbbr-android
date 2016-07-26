@@ -22,6 +22,10 @@ public interface APIService {
     @POST("tokens/oauth/grant")
     Call<Token> grantToken(@Field("grant_type") String grantType, @Field("access_token") String accessToken);
 
+    @FormUrlEncoded
+    @POST("mobile/register_android_device")
+    Call<JSONApiObject> registerDevice(@Field("device_token") String deviceToken);
+
     @GET("friendships")
     Call<JSONApiObject> getFriendships();
     @GET("friendships/{id}")

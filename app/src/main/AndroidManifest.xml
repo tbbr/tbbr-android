@@ -51,5 +51,12 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName="me.tbbr.tbbr.FriendshipDetailActivity">
         </activity>
+
+        <service
+            android:name=".TBBRInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 </manifest>
