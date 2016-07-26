@@ -26,7 +26,6 @@ import retrofit2.Callback;
  * Created by Maaz on 2016-04-16.
  */
 public class LoginActivity extends AppCompatActivity {
-    private TextView info;
     private LoginButton loginButton;
     private ProgressBar loginProgressBar;
 
@@ -40,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        info = (TextView)findViewById(R.id.loginInfo);
         loginButton = (LoginButton)findViewById(R.id.fbLoginButton);
         loginProgressBar = (ProgressBar)findViewById(R.id.loginProgressBar);
 
@@ -52,15 +50,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 String accessToken = loginResult.getAccessToken().getToken();
-                info.setText("User ID:  " +
-                        loginResult.getAccessToken().getUserId() + "\n" +
-                        "Auth Token: " + loginResult.getAccessToken().getToken());
-
-
                 APIService service = ((TBBRApplication) getApplication()).getUnauthenticatedApiService();
-
                 Call<Token> loginReq = service.grantToken("facebook_access_token", accessToken);
-
                 loginButton.setVisibility(LoginButton.INVISIBLE);
                 loginProgressBar.setVisibility(ProgressBar.VISIBLE);
 
@@ -68,25 +59,18 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Token> call, Response<Token> response) {
                         if (response.body() == null) {
-                            Toast err = Toast.makeText(getApplicationContext(), response.errorBody().toString(), Toast.LENGTH_LONG);
-                            err.show();
+                            Toast.makeText(getApplicationContext(), response.errorBody().toString(), Toast.LENGTH_LONG).show();
                         } else {
-                            Toast toast = Toast.makeText(getApplicationContext(), "Successfully logged in!", Toast.LENGTH_SHORT);
-                            toast.show();
-
-
+                            Toast.makeText(getApplicationContext(), "Successfully logged in!", Toast.LENGTH_SHORT).show();
                             ((TBBRApplication) getApplication()).setUserLoggedIn(response.body());
-
                             Intent intent = new Intent(LoginActivity.this, FriendshipListActivity.class);
-
                             LoginActivity.this.startActivity(intent);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Token> call, Throwable t) {
-                        Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
-                        toast.show();
+                        Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
 
                         loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
                         loginButton.setVisibility(LoginButton.VISIBLE);
@@ -97,13 +81,13 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                info.setText("Login attempt cancelled.");
+                Toast.makeText(getApplicationContext(), "Login attempt cancelled!", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onError(FacebookException e) {
                 e.printStackTrace();
-                info.setText("Login attempt failed.");
+                Toast.makeText(getApplicationContext(), "Login attempt failed!", Toast.LENGTH_LONG).show();
             }
         });
     }
