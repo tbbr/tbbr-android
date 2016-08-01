@@ -2,6 +2,7 @@ package me.tbbr.tbbr.api;
 
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 
+import me.tbbr.tbbr.models.DeviceToken;
 import me.tbbr.tbbr.models.Token;
 import me.tbbr.tbbr.models.Transaction;
 
@@ -22,9 +23,8 @@ public interface APIService {
     @POST("tokens/oauth/grant")
     Call<Token> grantToken(@Field("grant_type") String grantType, @Field("access_token") String accessToken);
 
-    @FormUrlEncoded
-    @POST("mobile/register_android_device")
-    Call<JSONApiObject> registerDevice(@Field("device_token") String deviceToken);
+    @POST("device-tokens")
+    Call<JSONApiObject> registerDevice(@Body DeviceToken deviceToken);
 
     @GET("friendships")
     Call<JSONApiObject> getFriendships();

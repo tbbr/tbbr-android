@@ -18,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 
 import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.models.DeviceToken;
 import me.tbbr.tbbr.models.Token;
 
 import retrofit2.Call;
@@ -85,10 +86,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.body() == null) {
                     Toast.makeText(getApplicationContext(), response.errorBody().toString(), Toast.LENGTH_LONG).show();
                 } else {
-                    // Register the device to the server, if we need to
-                    registerDeviceToReceiveNotifications();
                     Toast.makeText(getApplicationContext(), "Successfully logged in!", Toast.LENGTH_SHORT).show();
                     ((TBBRApplication) getApplication()).setUserLoggedIn(response.body());
+
+                    // Register the device to the server, if we need to
+                    registerDeviceToReceiveNotifications();
+
                     Intent intent = new Intent(LoginActivity.this, FriendshipListActivity.class);
                     LoginActivity.this.startActivity(intent);
                 }
@@ -110,22 +113,22 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        String deviceToken = preferences.getString("token", "");
+        String deviceTokenStr = preferences.getString("token", "");
 
-        if (deviceToken.equals("")) {
+        if (deviceTokenStr.equals("")) {
             return;
         }
 
-        Log.d("TRACE", "Registering device to server with firebase token: " + deviceToken);
+        Log.d("TRACE", "Registering device to server with firebase token: " + deviceTokenStr);
 
         // Device is not registered on the server
         APIService service = ((TBBRApplication) getApplication()).getAPIService();
-        Call<JSONApiObject> registerDeviceReq = service.registerDevice(deviceToken);
+        Call<JSONApiObject> registerDeviceReq = service.registerDevice(new DeviceToken(deviceTokenStr));
         registerDeviceReq.enqueue(new Callback<JSONApiObject>() {
             @Override
             public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
                 if (response.isSuccessful()) {
-                    Log.d("TRACE", "Device successfully registered to server with token:" + deviceToken);
+                    Log.d("TRACE", "Device successfully registered to server with token:" + deviceTokenStr);
                     // Device successfully registered
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("is_registered", true);

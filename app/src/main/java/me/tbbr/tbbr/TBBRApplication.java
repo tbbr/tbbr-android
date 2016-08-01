@@ -12,6 +12,7 @@ import com.gustavofao.jsonapi.Retrofit.JSONConverterFactory;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.MaterialModule;
 import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.models.DeviceToken;
 import me.tbbr.tbbr.models.Friendship;
 import me.tbbr.tbbr.models.Token;
 import me.tbbr.tbbr.models.Transaction;
@@ -102,7 +103,7 @@ public class TBBRApplication extends Application {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(getResources().getString(R.string.base_url))
-                .addConverterFactory(JSONConverterFactory.create(User.class, Friendship.class, Transaction.class))
+                .addConverterFactory(JSONConverterFactory.create(User.class, Friendship.class, Transaction.class, DeviceToken.class))
                 .client(client)
                 .build();
 
