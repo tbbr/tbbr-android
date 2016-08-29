@@ -15,6 +15,7 @@ public class Transaction extends Resource {
     private int amount;
     private String type;
     private String memo;
+    private String status;
 
     private int relatedObjectId;
     private String relatedObjectType;
@@ -27,7 +28,10 @@ public class Transaction extends Resource {
     private String createdAt;
 
     // For transforming to and from json
-    public Transaction() {}
+    public Transaction() {
+        // Default status to confirmed until UI functionality is there
+        this.status = "Confirmed";
+    }
 
     public Transaction(User sender, User recipient, int amount, String memo, String relatedObjectId,
                 String relatedObjectType, String type) {
@@ -38,6 +42,9 @@ public class Transaction extends Resource {
         this.relatedObjectId = Integer.valueOf(relatedObjectId);
         this.relatedObjectType = relatedObjectType;
         this.type = type;
+
+        // Default status to confirmed until UI functionality is there
+        this.status = "Confirmed";
     }
 
 
@@ -47,6 +54,14 @@ public class Transaction extends Resource {
 
     public int getAmount() {
         return amount;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public User getSender() {
