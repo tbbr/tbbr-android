@@ -33,13 +33,13 @@ public class Transaction extends Resource {
         this.status = "Confirmed";
     }
 
-    public Transaction(User sender, User recipient, int amount, String memo, String relatedObjectId,
+    public Transaction(User sender, User recipient, int amount, String memo, int relatedObjectId,
                 String relatedObjectType, String type) {
         this.sender = sender;
         this.recipient = recipient;
         this.amount = amount;
         this.memo = memo;
-        this.relatedObjectId = Integer.valueOf(relatedObjectId);
+        this.relatedObjectId = relatedObjectId;
         this.relatedObjectType = relatedObjectType;
         this.type = type;
 

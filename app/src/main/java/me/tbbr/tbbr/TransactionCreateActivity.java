@@ -122,8 +122,7 @@ public class TransactionCreateActivity extends AppCompatActivity {
 
                 if (currentFriendship != null) {
                     Transaction newTransaction = new Transaction(sender, recipient, amount, memo,
-                            currentFriendship.getId(), relatedObjectType, transactionType);
-
+                            currentFriendship.getFriendshipDataId(), relatedObjectType, transactionType);
 
                     Snackbar.make(layoutContainer, "Creating transaction...", Snackbar.LENGTH_SHORT).show();
 
