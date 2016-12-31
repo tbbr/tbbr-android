@@ -11,3 +11,4 @@
 *.apk
 
 /app/google-services.json
+/projectFilesBackup
