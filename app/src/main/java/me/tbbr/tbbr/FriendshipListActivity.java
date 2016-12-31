@@ -64,28 +64,11 @@ public class FriendshipListActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_friendship_list);
-
-
         makeFriendshipRequest();
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-
-        fab.setImageDrawable(
-                new IconDrawable(this, MaterialIcons.md_library_add));
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Context context = view.getContext();
-                Intent intent = new Intent(context, TransactionCreateActivity.class);
-                context.startActivity(intent);
-            }
-        });
     }
 
     private void makeFriendshipRequest() {
