@@ -116,9 +116,7 @@ public class FriendshipListActivity extends AppCompatActivity {
                     assert recyclerView != null;
 
                     ((RecyclerView)recyclerView).addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipListActivity.this).build());
-
                     app.setFriendships(response.body().getData());
-
                     setupRecyclerView((RecyclerView)recyclerView, app.getFriendships());
                 }
             }

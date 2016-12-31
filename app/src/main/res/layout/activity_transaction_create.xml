@@ -129,9 +129,6 @@
             android:hint="Memo..."
             android:padding="15dp"
             android:background="@android:color/transparent"/>
-
-
-
     </LinearLayout>
 
     <android.support.v7.widget.AppCompatButton
