@@ -58,11 +58,15 @@ public class FriendshipListActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_friendship_list);
-        makeFriendshipRequest();
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        makeFriendshipRequest();
     }
 
     private void makeFriendshipRequest() {
