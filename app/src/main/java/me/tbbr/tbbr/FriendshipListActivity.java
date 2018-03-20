@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +22,8 @@ import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.squareup.picasso.Picasso;
+
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.Friendship;
 
@@ -26,24 +32,14 @@ import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.tbbr.tbbr.models.Token;
+import me.tbbr.tbbr.models.User;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * An activity representing a list of friendships. This activity
- * has different presentations for handset and tablet-size devices. On
- * handsets, the activity presents a list of items, which when touched,
- * lead to a {@link FriendshipDetailActivity} representing
- * item details. On tablets, the activity presents the list of items and
- * item details side-by-side using two vertical panes.
- */
 public class FriendshipListActivity extends AppCompatActivity {
-
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
+    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,23 +47,63 @@ public class FriendshipListActivity extends AppCompatActivity {
         TBBRApplication app = (TBBRApplication) getApplication();
 
         if (! app.getIsUserLoggedIn()) {
+            Log.e("FriendshipListActivity", "User is not logged in, we do not have a token for them!");
             Intent loginIntent = new Intent(this, LoginActivity.class);
             this.startActivity(loginIntent);
             finish();
             return;
         }
 
+        progressBar = findViewById(R.id.friendship_list_progress_bar);
+
+        if (progressBar != null) {
+            progressBar.setVisibility(ProgressBar.VISIBLE);
+        }
+
+        Log.e("FriendshipListActivity", "User is logged in: " + app.getIsUserLoggedIn());
         setContentView(R.layout.activity_friendship_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
+
+        setNavigationContent();
     }
+
+    private void setNavigationContent() {
+        TBBRApplication app = (TBBRApplication) getApplication();
+        User curUser = app.getCurrentUser();
+        if (curUser == null) {
+            Log.e("FriendshipListActivity", "There is no curUser");
+            return;
+        }
+
+        NavigationView navView = findViewById(R.id.nav_view);
+        View header = navView.getHeaderView(0);
+
+        TextView nameView = header.findViewById(R.id.nav_user_name);
+        ImageView backdrop = header.findViewById(R.id.nav_image_backdrop);
+
+        nameView.setText(curUser.getName());
+        Picasso.with(this)
+                .load(curUser.getAvatarUrl("normal"))
+                .transform(new BlurTransformation(this, 25))
+                .placeholder(this.getResources().getDrawable(R.drawable.default_profile_picture))
+                .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
+                .into(backdrop);
+    }
+
+
 
     @Override
     protected void onStart() {
         super.onStart();
+        Log.e("FriendshipListActivity", "Im RUnning");
         makeFriendshipRequest();
     }
+
+
 
     private void makeFriendshipRequest() {
         final TBBRApplication app = (TBBRApplication) getApplication();
@@ -93,12 +129,15 @@ public class FriendshipListActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    View recyclerView = findViewById(R.id.friendship_list);
+                    findViewById(R.id.friendship_list_progress_bar).setVisibility(ProgressBar.INVISIBLE);
+                    RecyclerView recyclerView = findViewById(R.id.friendship_list);
                     assert recyclerView != null;
 
-                    ((RecyclerView)recyclerView).addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipListActivity.this).build());
+                    if (recyclerView.getItemDecorationAt(0) == null) {
+                        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipListActivity.this).build());
+                    }
                     app.setFriendships(response.body().getData());
-                    setupRecyclerView((RecyclerView)recyclerView, app.getFriendships());
+                    setupRecyclerView(recyclerView, app.getFriendships());
                 }
             }
 
@@ -172,10 +211,10 @@ public class FriendshipListActivity extends AppCompatActivity {
 
             public ViewHolder(View view) {
                 super(view);
-                cardView = (RelativeLayout) view.findViewById(R.id.friendship_card);
-                friendImage = (CircleImageView) view.findViewById(R.id.friendship_card_image);
-                friendName = (TextView) view.findViewById(R.id.friendship_card_name);
-                friendBalance = (TextView) view.findViewById(R.id.friendship_card_balance);
+                cardView = view.findViewById(R.id.friendship_card);
+                friendImage = view.findViewById(R.id.friendship_card_image);
+                friendName = view.findViewById(R.id.friendship_card_name);
+                friendBalance = view.findViewById(R.id.friendship_card_balance);
             }
         }
     }

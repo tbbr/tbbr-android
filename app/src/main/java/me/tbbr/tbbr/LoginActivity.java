@@ -21,6 +21,7 @@ import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.DeviceToken;
 import me.tbbr.tbbr.models.Token;
 
+import me.tbbr.tbbr.models.User;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Callback;
@@ -69,6 +70,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e("LoginActivity", "Im Running");
+    }
+
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -84,26 +92,27 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
                 if (response.body() == null) {
-                    Toast.makeText(getApplicationContext(), response.errorBody().toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Failed to login, try again!", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Successfully logged in!", Toast.LENGTH_SHORT).show();
-                    ((TBBRApplication) getApplication()).setUserLoggedIn(response.body());
-
                     // Register the device to the server, if we need to
                     registerDeviceToReceiveNotifications();
 
+                    ((TBBRApplication) getApplication()).setUserLoggedIn(response.body());
                     Intent intent = new Intent(LoginActivity.this, FriendshipListActivity.class);
                     LoginActivity.this.startActivity(intent);
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Login Failed!", Toast.LENGTH_LONG).show();
                 loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 loginButton.setVisibility(LoginButton.VISIBLE);
             }
         });
+
     }
 
     private void registerDeviceToReceiveNotifications() {

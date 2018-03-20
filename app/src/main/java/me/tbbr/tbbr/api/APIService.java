@@ -35,4 +35,7 @@ public interface APIService {
     Call<JSONApiObject> getTransactions(@Query("relatedObjectId") int relatedObjectId, @Query("relatedObjectType") String relatedObjectType);
     @POST("transactions")
     Call<JSONApiObject> createTransaction(@Body Transaction transaction);
+
+    @GET("users")
+    Call<JSONApiObject> getUser(@Query("id") String userId);
 }

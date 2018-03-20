@@ -147,9 +147,6 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JSONApiObject> call, Throwable t) {
-                Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
-                toast.show();
-
             }
         });
 
@@ -182,7 +179,6 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             public void onFailure(Call<JSONApiObject> call, Throwable t) {
                 Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
                 toast.show();
-
             }
         });
 
@@ -205,9 +201,6 @@ public class FriendshipDetailActivity extends AppCompatActivity {
     }
 
     private void handleNullBody(Response response) {
-        Toast err = Toast.makeText(getApplicationContext(), "Response body was null", Toast.LENGTH_LONG);
-        err.show();
-
         if (response.raw().code() == 401) {
             LoginManager.getInstance().logOut();
 
