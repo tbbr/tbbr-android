@@ -27,6 +27,7 @@ import jp.wasabeef.picasso.transformations.BlurTransformation;
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.Friendship;
 
+import com.wang.avi.AVLoadingIndicatorView;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;
@@ -54,10 +55,10 @@ public class FriendshipListActivity extends AppCompatActivity {
             return;
         }
 
-        progressBar = findViewById(R.id.friendship_list_progress_bar);
+        AVLoadingIndicatorView progressBar = findViewById(R.id.friendship_list_progress_bar);
 
         if (progressBar != null) {
-            progressBar.setVisibility(ProgressBar.VISIBLE);
+            progressBar.show();
         }
 
         Log.e("FriendshipListActivity", "User is logged in: " + app.getIsUserLoggedIn());
@@ -129,7 +130,8 @@ public class FriendshipListActivity extends AppCompatActivity {
                     }
 
                 } else {
-                    findViewById(R.id.friendship_list_progress_bar).setVisibility(ProgressBar.INVISIBLE);
+                    AVLoadingIndicatorView progressBar = findViewById(R.id.friendship_list_progress_bar);
+                    progressBar.hide();
                     RecyclerView recyclerView = findViewById(R.id.friendship_list);
                     assert recyclerView != null;
 

@@ -37,6 +37,20 @@
 
             <include layout="@layout/friendship_list" />
         </FrameLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.wang.avi.AVLoadingIndicatorView
+                style="@style/AVLoadingIndicatorView.Large"
+                android:id="@+id/friendship_list_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="visible"
+                app:indicatorName="BallPulseIndicator"
+                app:indicatorColor="@color/primaryDark"
+                />
+        </RelativeLayout>
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -51,13 +65,4 @@
         app:menu="@menu/drawer_menu"
         app:headerLayout="@layout/nav_header" />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:id="@+id/friendship_list_progress_bar"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="26dp" />
 </android.support.v4.widget.DrawerLayout>

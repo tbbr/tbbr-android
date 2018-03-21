@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
@@ -43,8 +45,6 @@ public class TransactionCreateActivity extends AppCompatActivity {
 
 
     CoordinatorLayout layoutContainer;
-    AutoCompleteTextView autocompleteSender;
-    AutoCompleteTextView autocompleteRecipient;
     EditText amountEditView;
     EditText memoEditView;
     AppCompatButton transactionCreateBtn;
@@ -74,7 +74,7 @@ public class TransactionCreateActivity extends AppCompatActivity {
         }
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.transaction_create_toolbar);
+        Toolbar toolbar = findViewById(R.id.transaction_create_toolbar);
         setSupportActionBar(toolbar);
 
         if (toolbar != null && getSupportActionBar() != null) {
@@ -82,13 +82,12 @@ public class TransactionCreateActivity extends AppCompatActivity {
             toolbar.setTitle(getTitle());
         }
 
-        amountEditView = (EditText) findViewById(R.id.transaction_create_amount);
-        memoEditView = (EditText) findViewById(R.id.transaction_create_memo);
-        layoutContainer = (CoordinatorLayout) findViewById(R.id.transaction_create_layout_container);
+        amountEditView =  findViewById(R.id.transaction_create_amount);
+        memoEditView =  findViewById(R.id.transaction_create_memo);
+        layoutContainer = findViewById(R.id.transaction_create_layout_container);
 
 
-        // Setup auto complete
-        setupAutoCompleteViews();
+        setupDropdown();
 
         // Setup create button
         setupCreateButton();
@@ -100,9 +99,43 @@ public class TransactionCreateActivity extends AppCompatActivity {
         return true;
     }
 
+    private void setupDropdown() {
+        User[] users = mapFriendshipsToUser();
+
+        Spinner spinner = findViewById(R.id.spinner_username_sender);
+        ArrayAdapter<User> senderAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, users);
+
+        spinner.setAdapter(senderAdapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                TBBRApplication app = (TBBRApplication) getApplication();
+                sender = (User)parent.getItemAtPosition(position);
+                if (sender.getId().equals(app.getCurrentUser().getId())) {
+                    // Sender is the current user
+                    if (currentFriendship != null) {
+                        recipient = currentFriendship.getFriend();
+                    }
+                } else {
+                    // Sender is not the current user
+                    // make recipient the current user then
+                    recipient = app.getCurrentUser();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                Log.e("TCA", "User selected nothing!");
+                sender = null;
+                recipient = null;
+            }
+        });
+    }
+
     private void setupCreateButton() {
-        APIService apiService = ((TBBRApplication) getApplication()).getAPIService();
-        transactionCreateBtn = (AppCompatButton) findViewById(R.id.transaction_create_btn);
+        transactionCreateBtn = findViewById(R.id.transaction_create_btn);
 
         transactionCreateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,160 +202,21 @@ public class TransactionCreateActivity extends AppCompatActivity {
         });
     }
 
-
-    private void setupAutoCompleteViews() {
-        TBBRApplication app = (TBBRApplication) getApplication();
-        User[] users = mapFriendshipsToUser();
-
-        autocompleteSender = (AutoCompleteTextView) findViewById(R.id.autocomplete_username_sender);
-        autocompleteRecipient = (AutoCompleteTextView) findViewById(R.id.autocomplete_username_recipient);
-
-        ArrayAdapter<User> senderAdapter = new ArrayAdapter<User>(this,
-                android.R.layout.simple_dropdown_item_1line, users);
-
-        ArrayAdapter<User> recipientAdapter = new ArrayAdapter<User>(this,
-                android.R.layout.simple_dropdown_item_1line, users);
-
-        autocompleteSender.setThreshold(1);
-        autocompleteSender.setAdapter(senderAdapter);
-
-        autocompleteRecipient.setThreshold(1);
-        autocompleteRecipient.setAdapter(recipientAdapter);
-
-        // Put default values to get lucky :P
-        if (currentFriendship != null) {
-            sender = currentFriendship.getUser();
-            autocompleteSender.setText(sender.getName());
-
-            recipient = currentFriendship.getFriend();
-            autocompleteRecipient.setText(recipient.getName());
-
-            amountEditView.requestFocus();
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        } else {
-            // TODO: Store current user in TBBRApplication
-            // For now we will use a super hacky way
-            // the last element in users array should be the current user.
-
-            sender = users[users.length - 1];
-            autocompleteSender.setText(sender.getName());
-
-            autocompleteRecipient.requestFocus();
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        }
-
-
-        autocompleteSender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((AutoCompleteTextView) view).setText("");
-                recipient = null;
-            }
-        });
-
-        autocompleteRecipient.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((AutoCompleteTextView) view).setText("");
-                recipient = null;
-            }
-        });
-
-        autocompleteSender.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    ((AutoCompleteTextView) v).setText("");
-                    sender = null;
-                }
-                return false;
-            }
-        });
-
-        autocompleteRecipient.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    ((AutoCompleteTextView) v).setText("");
-                    recipient = null;
-                }
-                return false;
-            }
-        });
-
-
-        autocompleteSender.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View arg1, int position,
-                                    long id) {
-                sender = (User) parent.getAdapter().getItem(position);
-
-                if (sender.getId().equals(app.getLoggedInUsersToken().getUserId())) {
-                    // Sender is the current user
-                    if (currentFriendship != null) {
-                        recipient = currentFriendship.getFriend();
-                        autocompleteRecipient.setText(recipient.getName());
-                    } else {
-                        autocompleteRecipient.requestFocus();
-                    }
-                } else {
-                    // Sender is not the current user
-                    // make recipient the current user then
-
-                    // TODO: Store current user in TBBRApplication
-                    // For now we will use a super hacky way
-                    // the last element in users array should be the current user.
-
-                    recipient = users[users.length - 1];
-                    autocompleteRecipient.setText(recipient.getName());
-                }
-            }
-        });
-
-        autocompleteRecipient.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View arg1, int position,
-                                    long id) {
-                recipient = (User) parent.getAdapter().getItem(position);
-
-                if (recipient.getId().equals(app.getLoggedInUsersToken().getUserId())) {
-                    // recipient is the current user
-                    if (currentFriendship != null) {
-                        sender = currentFriendship.getFriend();
-                        autocompleteSender.setText(sender.getName());
-                    } else {
-                        autocompleteSender.requestFocus();
-                    }
-                } else {
-                    // recipient is not the current user
-                    // make sender the current user then
-
-                    // TODO: Store current user in TBBRApplication
-                    // For now we will use a super hacky way
-                    // the last element in users array should be the current user.
-
-                    sender = users[users.length - 1];
-                    autocompleteSender.setText(sender.getName());
-                }
-            }
-        });
-    }
-
     public User[] mapFriendshipsToUser() {
         // This means that create transaction was clicked when the user was already
         // on a friendship, hence, we should only consider the current user and the friend
         if (currentFriendship != null) {
             User[] arr = new User[2];
-            arr[0] = currentFriendship.getFriend();
-            arr[1] = currentFriendship.getUser();
+            arr[0] = currentFriendship.getUser();
+            arr[1] = currentFriendship.getFriend();
 
             return arr;
         }
 
 
-
         // currentFriendship is null, add all friends in this case.
-        List<Resource> friendships = ((TBBRApplication) getApplication()).getFriendships();
+        TBBRApplication app = (TBBRApplication) getApplication();
+        List<Resource> friendships = app.getFriendships();
 
         // Return empty user array if user has no friendships
         if (friendships.size() == 0) {
@@ -331,12 +225,12 @@ public class TransactionCreateActivity extends AppCompatActivity {
 
         User[] arr = new User[friendships.size() + 1];
 
-        for(int i = 0; i < friendships.size(); i++) {
+        arr[0] = app.getCurrentUser();
+
+        for(int i = 1; i < friendships.size() + 1; i++) {
             Friendship f = (Friendship) friendships.get(i);
             arr[i] = f.getFriend();
         }
-
-        arr[friendships.size()] = ((Friendship) friendships.get(friendships.size() - 1)).getUser();
 
         return arr;
     }

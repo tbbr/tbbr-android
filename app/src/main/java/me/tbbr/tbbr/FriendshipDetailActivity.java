@@ -24,10 +24,13 @@ import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
+import com.r0adkll.slidr.Slidr;
 import com.squareup.picasso.Picasso;
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.Friendship;
 import me.tbbr.tbbr.models.Transaction;
+
+import com.wang.avi.AVLoadingIndicatorView;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;
@@ -55,11 +58,11 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
         friendship = (Friendship) app.getFriendships().get(position);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Toolbar toolbar = findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         if (fab != null) {
             fab.setImageDrawable(
                     new IconDrawable(this, MaterialIcons.md_library_add));
@@ -90,12 +93,12 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             appBarLayout.setTitle(friendship.getFriend().getName());
         }
 
-        balance = (TextView) findViewById(R.id.friendship_page_balance);
+        balance = findViewById(R.id.friendship_page_balance);
         balance.setText(friendship.getFormattedBalance());
         balance.setTextColor(friendship.getBalanceColor());
 
-        ImageView backdrop = (ImageView) findViewById(R.id.friend_image_backdrop);
-        CircleImageView mainImage = (CircleImageView) findViewById(R.id.friendship_page_main_img);
+        ImageView backdrop = findViewById(R.id.friend_image_backdrop);
+        CircleImageView mainImage = findViewById(R.id.friendship_page_main_img);
 
         Picasso.with(this)
                 .load(friendship.getFriend().getAvatarUrl("normal"))
@@ -110,6 +113,14 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(mainImage);
 
+        int primary = getResources().getColor(R.color.secondaryDark);
+        int secondary = getResources().getColor(R.color.secondaryDark);
+        Slidr.attach(this, primary, secondary);
+
+        AVLoadingIndicatorView progressBar = findViewById(R.id.friendship_detail_progress_bar);
+        if (progressBar != null) {
+            progressBar.show();
+        }
 
     }
 
@@ -134,14 +145,15 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 if (response.body() == null) {
                     handleNullBody(response);
                 } else {
-                    View recyclerView = findViewById(R.id.transaction_list);
+                    AVLoadingIndicatorView progressBar = findViewById(R.id.friendship_detail_progress_bar);
+                    progressBar.hide();
+                    RecyclerView recyclerView = findViewById(R.id.transaction_list);
                     assert recyclerView != null;
 
-                    ((RecyclerView)recyclerView).addItemDecoration(
-                            new HorizontalDividerItemDecoration.Builder(FriendshipDetailActivity.this)
-                                    .build());
-
-                    setupRecyclerView((RecyclerView) recyclerView, response.body().getData());
+                    if (recyclerView.getItemDecorationAt(0) == null) {
+                        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipDetailActivity.this).build());
+                    }
+                    setupRecyclerView(recyclerView, response.body().getData());
                 }
             }
 
