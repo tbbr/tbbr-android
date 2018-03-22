@@ -8,4 +8,6 @@
     <string name="base_url">http://tbbr.me/api/</string>
 
     <string name="max_length_memo">140</string>
+
+    <string name="me">Me</string>
 </resources>

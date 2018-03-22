@@ -17,16 +17,25 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
+import com.llollox.androidtoggleswitch.widgets.ToggleSwitch;
+import com.llollox.androidtoggleswitch.widgets.ToggleSwitchButton;
+import com.squareup.picasso.Picasso;
+
+import org.jetbrains.annotations.NotNull;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.Friendship;
 import me.tbbr.tbbr.models.Transaction;
 import me.tbbr.tbbr.models.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -87,7 +96,7 @@ public class TransactionCreateActivity extends AppCompatActivity {
         layoutContainer = findViewById(R.id.transaction_create_layout_container);
 
 
-        setupDropdown();
+        setupSenderToggle();
 
         // Setup create button
         setupCreateButton();
@@ -99,39 +108,75 @@ public class TransactionCreateActivity extends AppCompatActivity {
         return true;
     }
 
-    private void setupDropdown() {
-        User[] users = mapFriendshipsToUser();
-
-        Spinner spinner = findViewById(R.id.spinner_username_sender);
-        ArrayAdapter<User> senderAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, users);
-
-        spinner.setAdapter(senderAdapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                TBBRApplication app = (TBBRApplication) getApplication();
-                sender = (User)parent.getItemAtPosition(position);
-                if (sender.getId().equals(app.getCurrentUser().getId())) {
-                    // Sender is the current user
-                    if (currentFriendship != null) {
-                        recipient = currentFriendship.getFriend();
+    private void setupSenderToggle() {
+        ToggleSwitch toggleSwitch = findViewById(R.id.toggle_username_sender);
+//        ArrayList<User> labels = new ArrayList<>();
+//        labels.addAll(mapFriendshipsToUser());
+        toggleSwitch.setNumEntries(2);
+        toggleSwitch.setView(
+            R.layout.user_badge, 2,
+            new ToggleSwitchButton.ToggleSwitchButtonDecorator() {
+                @Override
+                public void decorate(ToggleSwitchButton toggleSwitchButton, @NotNull View view, int position) {
+                    TextView textView  = view.findViewById(R.id.user_badge_name);
+                    CircleImageView mainImage = view.findViewById(R.id.user_badge_image);
+                    if (position == 0) {
+                        textView.setText(R.string.me);
+                        Picasso.with(TransactionCreateActivity.this)
+                                .load(currentFriendship.getUser().getAvatarUrl("normal"))
+                                .placeholder(TransactionCreateActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+                                .error(TransactionCreateActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+                                .into(mainImage);
+                    } else {
+                        textView.setText(currentFriendship.getFriend().getName());
+                        Picasso.with(TransactionCreateActivity.this)
+                                .load(currentFriendship.getFriend().getAvatarUrl("normal"))
+                                .placeholder(TransactionCreateActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+                                .error(TransactionCreateActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+                                .into(mainImage);
+                        view.getLayoutParams().width = 500;
+                        view.requestLayout();
                     }
-                } else {
-                    // Sender is not the current user
-                    // make recipient the current user then
-                    recipient = app.getCurrentUser();
+                }
+            },
+            new ToggleSwitchButton.ViewDecorator() {
+                @Override
+                public void decorate(@NotNull View view, int position) {
+                    TextView textView  = view.findViewById(R.id.user_badge_name);
+                    textView.setTextColor(getResources().getColor(R.color.secondaryBase));
+                }
+            },
+            new ToggleSwitchButton.ViewDecorator() {
+                @Override
+                public void decorate(@NotNull View view, int position) {
+                    TextView textView  = view.findViewById(R.id.user_badge_name);
+                    textView.setTextColor(getResources().getColor(R.color.grey500));
                 }
             }
+        );
 
+        toggleSwitch.setCheckedPosition(0);
+        toggleSwitch.setOnChangeListener(new ToggleSwitch.OnChangeListener(){
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                Log.e("TCA", "User selected nothing!");
-                sender = null;
-                recipient = null;
+            public void onToggleSwitchChanged(int position) {
+                if (currentFriendship == null) {
+                    Log.e("TCA", "CurrentFriendship is null");
+                    return;
+                }
+                // This is assuming position 0 is for the current user, in this case
+                // we've set it up so that current user is in the first position
+                if (position == 0) {
+                    // Current user is sender
+                    sender = currentFriendship.getUser();
+                    recipient = currentFriendship.getFriend();
+                } else {
+                    // Friend is sender
+                    sender = currentFriendship.getFriend();
+                    recipient = currentFriendship.getUser();
+                }
             }
         });
+
     }
 
     private void setupCreateButton() {

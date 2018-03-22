@@ -33,7 +33,6 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -49,15 +48,18 @@
                 android:textAllCaps="true"
                 android:textColor="@color/grey600"/>
 
-            <Spinner
-                android:id="@+id/spinner_username_sender"
-                android:layout_width="fill_parent"
+            <com.llollox.androidtoggleswitch.widgets.ToggleSwitch
+                android:id="@+id/toggle_username_sender"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp" />
+                app:checkedBackgroundColor="@color/primaryDarker"
+                app:uncheckedBackgroundColor="@color/secondaryBase"
+                app:separatorColor="@color/secondaryLight"
+                app:toggleHeight="40dp"
+                app:toggleMargin="0dp"
+                app:elevation="0dp"/>
 
         </LinearLayout>
-
-
 
         <LinearLayout
             android:orientation="horizontal"
