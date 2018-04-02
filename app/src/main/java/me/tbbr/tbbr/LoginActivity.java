@@ -16,6 +16,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.DeviceToken;
@@ -31,7 +32,7 @@ import retrofit2.Callback;
  */
 public class LoginActivity extends AppCompatActivity {
     private LoginButton loginButton;
-    private ProgressBar loginProgressBar;
+    private AVLoadingIndicatorView  progressBar;
 
     private CallbackManager callbackManager;
 
@@ -44,10 +45,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         loginButton = (LoginButton)findViewById(R.id.fbLoginButton);
-        loginProgressBar = (ProgressBar)findViewById(R.id.loginProgressBar);
-
-        if (loginProgressBar != null) {
-            loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        progressBar = findViewById(R.id.friendship_detail_progress_bar);
+        if (progressBar != null) {
+            progressBar.hide();
         }
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -86,7 +86,7 @@ public class LoginActivity extends AppCompatActivity {
         APIService service = ((TBBRApplication) getApplication()).getUnauthenticatedApiService();
         Call<Token> loginReq = service.grantToken("facebook_access_token", accessToken);
         loginButton.setVisibility(LoginButton.INVISIBLE);
-        loginProgressBar.setVisibility(ProgressBar.VISIBLE);
+        progressBar.show();
 
         loginReq.enqueue(new Callback<Token>() {
             @Override
@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), "Login Failed!", Toast.LENGTH_LONG).show();
-                loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                progressBar.hide();
                 loginButton.setVisibility(LoginButton.VISIBLE);
             }
         });

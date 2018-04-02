@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:padding="16dp"
-    >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/fbLoginButton"
@@ -11,13 +12,14 @@
         android:layout_centerInParent="true"
         />
 
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:id="@+id/loginProgressBar"
+    <com.wang.avi.AVLoadingIndicatorView
+        style="@style/AVLoadingIndicatorView.Large"
+        android:id="@+id/friendship_detail_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="26dp" />
+        android:layout_centerInParent="true"
+        android:visibility="visible"
+        app:indicatorName="BallPulseIndicator"
+        app:indicatorColor="@color/primaryDark"
+        />
 </RelativeLayout>

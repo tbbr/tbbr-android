@@ -42,9 +42,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Created by Maaz on 2016-04-20.
- */
 public class TransactionCreateActivity extends AppCompatActivity {
 
     User sender;
@@ -110,8 +107,6 @@ public class TransactionCreateActivity extends AppCompatActivity {
 
     private void setupSenderToggle() {
         ToggleSwitch toggleSwitch = findViewById(R.id.toggle_username_sender);
-//        ArrayList<User> labels = new ArrayList<>();
-//        labels.addAll(mapFriendshipsToUser());
         toggleSwitch.setNumEntries(2);
         toggleSwitch.setView(
             R.layout.user_badge, 2,
@@ -156,6 +151,15 @@ public class TransactionCreateActivity extends AppCompatActivity {
         );
 
         toggleSwitch.setCheckedPosition(0);
+        // Set the default sender and recipient
+        // Sender by default being the currentUser "at position 0"
+        if (currentFriendship != null) {
+            sender = currentFriendship.getUser();
+            recipient = currentFriendship.getFriend();
+        } else {
+            Log.e("TCA", "CurrentFriendship is null during setting the default");
+        }
+
         toggleSwitch.setOnChangeListener(new ToggleSwitch.OnChangeListener(){
             @Override
             public void onToggleSwitchChanged(int position) {
@@ -190,13 +194,18 @@ public class TransactionCreateActivity extends AppCompatActivity {
                 String stringAmount = amountEditView.getText().toString();
 
                 if (stringAmount.equals("") || Double.valueOf(stringAmount) == 0) {
-                    Snackbar.make(layoutContainer, "Amount cannot be zero", Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(layoutContainer, "Amount cannot be zero", Snackbar.LENGTH_LONG).show();
                     return;
                 }
 
                 double amountInDecimal = Double.valueOf(stringAmount);
                 amount = (int) (amountInDecimal * 100);
                 memo = memoEditView.getText().toString();
+
+                if (sender == null || recipient == null) {
+                    Snackbar.make(layoutContainer, "Paid by cannot be empty!", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
 
                 if (currentFriendship != null) {
                     Transaction newTransaction = new Transaction(sender, recipient, amount, memo,

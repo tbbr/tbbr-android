@@ -52,7 +52,7 @@
                 android:id="@+id/toggle_username_sender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:checkedBackgroundColor="@color/primaryDarker"
+                app:checkedBackgroundColor="@color/primaryBase"
                 app:uncheckedBackgroundColor="@color/secondaryBase"
                 app:separatorColor="@color/secondaryLight"
                 app:toggleHeight="40dp"

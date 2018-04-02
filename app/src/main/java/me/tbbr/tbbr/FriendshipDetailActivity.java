@@ -87,7 +87,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         }
 
 
-        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        CollapsingToolbarLayout appBarLayout = findViewById(R.id.toolbar_layout);
 
         if (appBarLayout != null) {
             appBarLayout.setTitle(friendship.getFriend().getName());
