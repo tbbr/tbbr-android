@@ -33,10 +33,9 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Maaz on 2016-04-18.
- */
 public class TBBRApplication extends Application {
+
+    public static String BASE_URL = "http://tbbr.me/api/";
 
     APIService apiService;
     APIService unauthenticatedApiService;
@@ -48,6 +47,33 @@ public class TBBRApplication extends Application {
     // TODO: Use a hashmap of <friendshipId => Friendship> to make it easier
     // to potentially update friendship cache at a later date.
     List<Resource> friendships;
+
+
+    public static APIService createAuthenticatedService(Token token) {
+        Interceptor authorizationInterceptor = new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+                Request newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer " + token.getAccessToken()).build();
+                return chain.proceed(newRequest);
+            }
+        };
+
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .addInterceptor(authorizationInterceptor)
+                .build();
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(JSONConverterFactory.create(User.class, Friendship.class, Transaction.class, DeviceToken.class))
+                .client(client)
+                .build();
+
+        return retrofit.create(APIService.class);
+
+    }
 
     public void onCreate() {
         super.onCreate();
@@ -71,7 +97,7 @@ public class TBBRApplication extends Application {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getResources().getString(R.string.base_url))
+                .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();
@@ -86,28 +112,6 @@ public class TBBRApplication extends Application {
         }
     }
 
-    private void makeCurrentUserRequest(Token token) {
-        Call<JSONApiObject> curUserReq = apiService.getUser(token.getUserId());
-        curUserReq.enqueue(new Callback<JSONApiObject>() {
-            @Override
-            public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
-
-                if (response.body() == null) {
-                    Toast.makeText(getApplicationContext(), "Failed to get current user, try logging in again!", Toast.LENGTH_LONG).show();
-                } else {
-                    setCurrentUser(response.body().getData(0));
-                    Log.d("TBBRApp", "We've got the user set");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<JSONApiObject> call, Throwable t) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Failed to get current user", Toast.LENGTH_LONG);
-                toast.show();
-            }
-        });
-    }
-
     public void setUserLoggedIn(Token token) {
         this.loggedInUsersToken = token;
 
@@ -117,35 +121,13 @@ public class TBBRApplication extends Application {
     }
 
     private void logUserIn(Token token) {
-        Interceptor authorizationInterceptor = new Interceptor() {
-            @Override
-            public okhttp3.Response intercept(Chain chain) throws IOException {
-                Request newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer " + loggedInUsersToken.getAccessToken()).build();
-                return chain.proceed(newRequest);
-            }
-        };
-
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .addInterceptor(authorizationInterceptor)
-                .build();
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getResources().getString(R.string.base_url))
-                .addConverterFactory(JSONConverterFactory.create(User.class, Friendship.class, Transaction.class, DeviceToken.class))
-                .client(client)
-                .build();
-
-        apiService = retrofit.create(APIService.class);
+        apiService = TBBRApplication.createAuthenticatedService(token);
 
         SharedPreferences.Editor editor = getSharedPreferences("AUTH_PREFERENCES", MODE_PRIVATE).edit();
         Gson converter = new Gson();
 
         editor.putString("token", converter.toJson(token));
         editor.apply();
-        makeCurrentUserRequest(token);
     }
 
     public boolean getIsUserLoggedIn() {

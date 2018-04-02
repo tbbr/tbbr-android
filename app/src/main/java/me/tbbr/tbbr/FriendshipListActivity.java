@@ -100,7 +100,7 @@ public class FriendshipListActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        Log.e("FriendshipListActivity", "Im RUnning");
+        Log.e("FriendshipListActivity", "Im Running");
         makeFriendshipRequest();
     }
 

@@ -5,12 +5,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp">
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/fbLoginButton"
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/icon_high_res"
+        android:layout_above="@+id/fb_login_button"
+        android:layout_marginBottom="30dp"/>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/fb_login_button"
+        android:padding="15dp"
+        android:paddingEnd="30dp"
+        android:paddingStart="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        />
+        android:text="Login via Facebook"
+        android:layout_gravity="bottom"
+        app:backgroundTint="@color/com_facebook_button_background_color"
+        android:textColor="@color/com_facebook_button_text_color"
+        android:textSize="15sp"
+        android:layout_centerInParent="true"/>
+
 
     <com.wang.avi.AVLoadingIndicatorView
         style="@style/AVLoadingIndicatorView.Large"

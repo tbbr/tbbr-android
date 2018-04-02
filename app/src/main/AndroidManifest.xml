@@ -28,10 +28,6 @@
             android:name="me.tbbr.tbbr.FriendshipListActivity"
             android:label="tbbr"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
@@ -49,6 +45,16 @@
             android:label="@string/title_transaction_create"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName="me.tbbr.tbbr.FriendshipDetailActivity">
+        </activity>
+
+        <activity
+            android:name="me.tbbr.tbbr.SplashActivity"
+            android:label="tbbr"
+            android:theme="@style/AppTheme.SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service
