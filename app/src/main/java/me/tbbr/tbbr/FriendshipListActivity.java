@@ -40,7 +40,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class FriendshipListActivity extends AppCompatActivity {
-    ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,17 +68,52 @@ public class FriendshipListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
-        setNavigationContent();
+        setupNavigation();
     }
 
-    private void setNavigationContent() {
+    private void setupNavigation() {
         TBBRApplication app = (TBBRApplication) getApplication();
         User curUser = app.getCurrentUser();
         if (curUser == null) {
-            Log.e("FriendshipListActivity", "There is no curUser");
-            return;
+            Call<JSONApiObject> curUserReq = app.apiService.getUser(app.getLoggedInUsersToken().getUserId());
+            try {
+                curUserReq.enqueue(new Callback<JSONApiObject>() {
+                    @Override
+                    public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
+                        if (response.body() == null) {
+
+                            if (response.raw().code() == 401) {
+                                Toast.makeText(getApplicationContext(), "Failed to get current user, try logging in again!" + String.valueOf(response.code()), Toast.LENGTH_LONG).show();
+                                LoginManager.getInstance().logOut();
+
+                                Intent loginIntent = new Intent(FriendshipListActivity.this, LoginActivity.class);
+                                FriendshipListActivity.this.startActivity(loginIntent);
+                                FriendshipListActivity.this.finish();
+                            }
+
+                        } else {
+                            Resource curUser = response.body().getData(0);
+                            app.setCurrentUser(curUser);
+                            setNavigationContent((User)curUser);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<JSONApiObject> call, Throwable t) {
+                        Toast.makeText(getApplicationContext(), "Failed to respond", Toast.LENGTH_LONG).show();
+                        Log.e("API", t.getMessage());
+                    }
+                });
+            } catch (Exception ex) {
+                Log.e("API", ex.getMessage());
+            }
+        } else {
+            setNavigationContent(curUser);
         }
 
+    }
+
+    private void setNavigationContent(User curUser) {
         NavigationView navView = findViewById(R.id.nav_view);
         View header = navView.getHeaderView(0);
 
@@ -94,7 +128,6 @@ public class FriendshipListActivity extends AppCompatActivity {
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(backdrop);
     }
-
 
 
     @Override
