@@ -26,7 +26,7 @@
 
         <activity
             android:name="me.tbbr.tbbr.FriendshipListActivity"
-            android:label="tbbr"
+            android:label="Friends"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 

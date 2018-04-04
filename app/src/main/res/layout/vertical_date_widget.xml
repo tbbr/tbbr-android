@@ -4,31 +4,43 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
+
     <TextView
         android:id="@+id/vertical_date_month"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textAllCaps="true"
-        android:fontFamily="sans-serif-light"
-        android:textColor="@color/grey600"
+        android:textColor="@color/grey200"
+        android:textSize="12sp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/primaryDark"
         />
 
-    <TextView
-        android:id="@+id/vertical_date_day"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:fontFamily="sans-serif-light"
-        android:textColor="@color/grey600"
-        />
+        android:background="@color/grey800"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/vertical_date_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/grey200"
+            android:textSize="15sp"
+            />
 
-    <TextView
-        android:id="@+id/vertical_date_year"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:fontFamily="sans-serif-light"
-        android:textColor="@color/grey600"
-        />
+        <TextView
+            android:id="@+id/vertical_date_year"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/grey200"
+            android:textSize="9sp"
+            />
+    </LinearLayout>
 </LinearLayout>

@@ -83,7 +83,10 @@ public class Transaction extends Resource implements Serializable {
         } else {
             return "no memo available";
         }
+    }
 
+    public User getCreator() {
+        return creator;
     }
 
 

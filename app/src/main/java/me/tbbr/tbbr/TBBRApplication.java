@@ -79,17 +79,8 @@ public class TBBRApplication extends Application {
         super.onCreate();
 
         Iconify.with(new MaterialModule());
-
         Stetho.initializeWithDefaults(this);
-
         FacebookSdk.sdkInitialize(getApplicationContext());
-
-        Gson converter = new Gson();
-        SharedPreferences preferences = getSharedPreferences("AUTH_PREFERENCES", MODE_PRIVATE);
-
-        Token savedToken = converter.fromJson(preferences.getString("token", ""), Token.class);
-        Log.e("TBBRApplication", "Our saved token is: " + savedToken.getAccessToken());
-        loggedInUsersToken = savedToken;
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addNetworkInterceptor(new StethoInterceptor())
@@ -104,12 +95,21 @@ public class TBBRApplication extends Application {
 
         unauthenticatedApiService = retrofit.create(APIService.class);
 
-        if (savedToken != null) {
-            logUserIn(savedToken);
-            Log.e("TBBRApplication", "We successfully logged user into our application!");
-        } else {
+
+        Gson converter = new Gson();
+        SharedPreferences preferences = getSharedPreferences("AUTH_PREFERENCES", MODE_PRIVATE);
+
+        Token savedToken = converter.fromJson(preferences.getString("token", ""), Token.class);
+        if (savedToken == null) {
             apiService = unauthenticatedApiService;
+            return;
         }
+
+        Log.e("TBBRApplication", "Our saved token is: " + savedToken.getAccessToken());
+        loggedInUsersToken = savedToken;
+
+        logUserIn(savedToken);
+        Log.e("TBBRApplication", "We successfully logged user into our application!");
     }
 
     public void setUserLoggedIn(Token token) {
