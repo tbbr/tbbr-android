@@ -8,6 +8,7 @@ import me.tbbr.tbbr.models.Transaction;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -15,9 +16,6 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-/**
- * Created by Maaz on 2016-04-18.
- */
 public interface APIService {
     @FormUrlEncoded
     @POST("tokens/oauth/grant")
@@ -35,4 +33,9 @@ public interface APIService {
     Call<JSONApiObject> getTransactions(@Query("relatedObjectId") int relatedObjectId, @Query("relatedObjectType") String relatedObjectType);
     @POST("transactions")
     Call<JSONApiObject> createTransaction(@Body Transaction transaction);
+    @DELETE("transactions/{id}")
+    Call<JSONApiObject> deleteTransaction(@Path("id") String transactionId);
+
+    @GET("users")
+    Call<JSONApiObject> getUser(@Query("id") String userId);
 }

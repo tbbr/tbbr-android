@@ -42,46 +42,22 @@
             <TextView android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="25dp"
-                android:textSize="18sp"
-                android:labelFor="@+id/autocomplete_username_sender"
-                android:text="Paid by"
-                android:textColor="@color/grey500"/>
+                android:textSize="13sp"
+                android:labelFor="@+id/spinner_username_sender"
+                android:text="Paid By"
+                android:textAllCaps="true"
+                android:textColor="@color/grey600"/>
 
-            <AutoCompleteTextView
-                android:id="@+id/autocomplete_username_sender"
-                android:layout_width="fill_parent"
+            <com.llollox.androidtoggleswitch.widgets.ToggleSwitch
+                android:id="@+id/toggle_username_sender"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:dropDownVerticalOffset="10sp"
-                android:layout_marginLeft="15dp"
-                android:imeOptions="actionNext"
-                android:inputType="text"/>
-
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:padding="15dp">
-
-            <TextView android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="25dp"
-                android:textSize="18sp"
-                android:labelFor="@+id/autocomplete_username_recipient"
-                android:text="Recipient"
-                android:textColor="@color/grey500"/>
-
-            <AutoCompleteTextView
-                android:id="@+id/autocomplete_username_recipient"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:dropDownVerticalOffset="10sp"
-                android:imeOptions="actionNext"
-                android:inputType="text"/>
+                app:checkedBackgroundColor="@color/primaryBase"
+                app:uncheckedBackgroundColor="@color/secondaryBase"
+                app:separatorColor="@color/secondaryLight"
+                app:toggleHeight="40dp"
+                app:toggleMargin="0dp"
+                app:elevation="0dp"/>
 
         </LinearLayout>
 
@@ -94,9 +70,10 @@
             <TextView android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="25dp"
-                android:textSize="18sp"
+                android:textSize="13sp"
                 android:text="Amount"
-                android:textColor="@color/grey500"/>
+                android:textColor="@color/grey600"
+                android:textAllCaps="true"/>
 
             <TextView android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -132,14 +109,16 @@
     </LinearLayout>
 
     <android.support.v7.widget.AppCompatButton
+        style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:id="@+id/transaction_create_btn"
-        android:padding="15dp"
+        android:padding="25dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Create Transaction"
         android:layout_gravity="bottom"
-        app:backgroundTint="@color/primaryDark"
-        android:textColor="@color/primaryLighter"
-        android:textSize="15sp"/>
+        android:background="@color/primaryDark"
+        android:textColor="@color/grey200"
+        android:textSize="20sp"
+        android:layout_margin="0dp" />
 
 </android.support.design.widget.CoordinatorLayout>

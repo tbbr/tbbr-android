@@ -6,8 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -16,18 +21,25 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
+import com.r0adkll.slidr.Slidr;
 import com.squareup.picasso.Picasso;
 import me.tbbr.tbbr.api.APIService;
+import me.tbbr.tbbr.helpers.RecyclerItemTouchHelper;
 import me.tbbr.tbbr.models.Friendship;
 import me.tbbr.tbbr.models.Transaction;
+
+import com.wang.avi.AVLoadingIndicatorView;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
 import java.util.List;
@@ -39,9 +51,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class FriendshipDetailActivity extends AppCompatActivity {
+public class FriendshipDetailActivity extends AppCompatActivity implements RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
 
     private Friendship friendship;
+    private List<Resource> transactions;
+    private SimpleItemRecyclerViewAdapter mAdapter;
 
     TextView balance;
 
@@ -55,14 +69,14 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
         friendship = (Friendship) app.getFriendships().get(position);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        Toolbar toolbar = findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         if (fab != null) {
             fab.setImageDrawable(
-                    new IconDrawable(this, MaterialIcons.md_library_add));
+                    new IconDrawable(this, MaterialIcons.md_library_add).colorRes(R.color.grey100));
 
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,18 +98,16 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         }
 
 
-        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        CollapsingToolbarLayout appBarLayout = findViewById(R.id.toolbar_layout);
 
         if (appBarLayout != null) {
             appBarLayout.setTitle(friendship.getFriend().getName());
         }
 
-        balance = (TextView) findViewById(R.id.friendship_page_balance);
-        balance.setText(friendship.getFormattedBalance());
-        balance.setTextColor(friendship.getBalanceColor());
+        setBalanceText();
 
-        ImageView backdrop = (ImageView) findViewById(R.id.friend_image_backdrop);
-        CircleImageView mainImage = (CircleImageView) findViewById(R.id.friendship_page_main_img);
+        ImageView backdrop = findViewById(R.id.friend_image_backdrop);
+        CircleImageView mainImage = findViewById(R.id.friendship_page_main_img);
 
         Picasso.with(this)
                 .load(friendship.getFriend().getAvatarUrl("normal"))
@@ -110,6 +122,10 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(mainImage);
 
+        AVLoadingIndicatorView progressBar = findViewById(R.id.friendship_detail_progress_bar);
+        if (progressBar != null) {
+            progressBar.show();
+        }
 
     }
 
@@ -118,6 +134,12 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         super.onStart();
         makeTransactionRequest();
         makeFriendshipRequest();
+    }
+
+    private void setBalanceText() {
+        balance = findViewById(R.id.friendship_page_balance);
+        balance.setText(friendship.getFormattedBalance());
+        balance.setTextColor(friendship.getBalanceColor());
     }
 
     private void makeTransactionRequest() {
@@ -134,22 +156,21 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 if (response.body() == null) {
                     handleNullBody(response);
                 } else {
-                    View recyclerView = findViewById(R.id.transaction_list);
+                    AVLoadingIndicatorView progressBar = findViewById(R.id.friendship_detail_progress_bar);
+                    progressBar.hide();
+                    RecyclerView recyclerView = findViewById(R.id.transaction_list);
                     assert recyclerView != null;
 
-                    ((RecyclerView)recyclerView).addItemDecoration(
-                            new HorizontalDividerItemDecoration.Builder(FriendshipDetailActivity.this)
-                                    .build());
-
-                    setupRecyclerView((RecyclerView) recyclerView, response.body().getData());
+                    if (recyclerView.getItemDecorationAt(0) == null) {
+                        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipDetailActivity.this).build());
+                    }
+                    transactions = response.body().getData();
+                    setupRecyclerView(recyclerView, response.body().getData());
                 }
             }
 
             @Override
             public void onFailure(Call<JSONApiObject> call, Throwable t) {
-                Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
-                toast.show();
-
             }
         });
 
@@ -172,9 +193,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                     List<Resource> friendshipList = response.body().getData();
 
                     friendship = (Friendship) friendshipList.get(0);
-
-                    balance.setText(friendship.getFormattedBalance());
-                    balance.setTextColor(friendship.getBalanceColor());
+                    setBalanceText();
                 }
             }
 
@@ -182,32 +201,46 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             public void onFailure(Call<JSONApiObject> call, Throwable t) {
                 Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
                 toast.show();
+            }
+        });
+    }
 
+    private void makeDeleteTransactionRequest(Transaction transaction) {
+        final TBBRApplication app = (TBBRApplication) getApplication();
+        APIService service = app.getAPIService();
+
+        Call<JSONApiObject> transactionDeleteReq = service.deleteTransaction(transaction.getId());
+
+
+        transactionDeleteReq.enqueue(new Callback<JSONApiObject>() {
+            @Override
+            public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
+                Log.e("TEST", String.valueOf(response.code()));
+                if (response.body() == null) {
+                    handleNullBody(response);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Transaction hard deleted!", Toast.LENGTH_LONG).show();
+                    makeFriendshipRequest();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JSONApiObject> call, Throwable t) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Unable to hard delete transaction!", Toast.LENGTH_LONG);
+                toast.show();
             }
         });
 
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            // This ID represents the Home or Up button. In the case of this
-            // activity, the Up button is shown. For
-            // more details, see the Navigation pattern on Android Design:
-            //
-            // http://developer.android.com/design/patterns/navigation.html#up-vs-back
-            //
-            navigateUpTo(new Intent(this, FriendshipListActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        finish();
+        return true;
     }
 
     private void handleNullBody(Response response) {
-        Toast err = Toast.makeText(getApplicationContext(), "Response body was null", Toast.LENGTH_LONG);
-        err.show();
-
         if (response.raw().code() == 401) {
             LoginManager.getInstance().logOut();
 
@@ -220,13 +253,88 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView, List<Resource> transactions) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(transactions));
+        mAdapter = new SimpleItemRecyclerViewAdapter(transactions);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        // adding item touch helper
+        // only ItemTouchHelper.LEFT added to detect Right to Left swipe
+        // if you want both Right -> Left and Left -> Right
+        // add pass ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT as param
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(recyclerView);
+
+    }
+
+    /**
+     * callback when recycler view is swiped
+     * item will be removed on swiped
+     * undo option will be provided in snackbar to restore the item
+     */
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof SimpleItemRecyclerViewAdapter.ViewHolder) {
+            TBBRApplication app = (TBBRApplication) getApplication();
+            // backup of removed item for undo purpose
+            final Transaction deletedTransaction = (Transaction) transactions.get(viewHolder.getAdapterPosition());
+
+            // If the currently logged in user is not the creator of the transaction, do not try to delete it
+            // and let them know they cannot delete it
+            if (!deletedTransaction.getCreator().getId().equals(app.getLoggedInUsersToken().getUserId())) {
+                Toast.makeText(getApplicationContext(), "You can only delete transactions you've created!", Toast.LENGTH_LONG).show();
+                // Resets the item to it's unswiped position
+                mAdapter.notifyItemChanged(position);
+                return;
+            }
+
+
+            String amount = deletedTransaction.getFormattedAmount();
+            final int deletedIndex = viewHolder.getAdapterPosition();
+
+            // remove the item from recycler view
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            // Update the balance locally, giving the user immediate feedback
+            friendship.removeTransactionFromBalance(deletedTransaction);
+            setBalanceText();
+
+            // showing snack bar with Undo option
+            Snackbar snackbar = Snackbar
+                    .make(findViewById(R.id.friendship_detail_layout), "Transaction " + amount + " deleted, new balance: " + friendship.getFormattedBalance(), Snackbar.LENGTH_LONG);
+            snackbar.setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // undo is selected, restore the deleted item
+                    mAdapter.restoreItem(deletedTransaction, deletedIndex);
+                    friendship.addTransactionToBalance(deletedTransaction);
+                    setBalanceText();
+                }
+            });
+            snackbar.addCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    Log.e("TEST", "Can be safely deleted Event: " + String.valueOf(event));
+                    int timedOutDismissed = 2;
+                    int undoEvent = 1;
+                    // We may want to be strict and only allow deletion if the snackbar timed out
+                    // Currently it will delete the transaction as long as it wasn't the undo event
+                    if (event != undoEvent) {
+                        makeDeleteTransactionRequest(deletedTransaction);
+                    }
+                }
+            });
+            snackbar.setActionTextColor(getResources().getColor(R.color.primaryBase));
+            snackbar.show();
+        }
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private List<Resource> transactions;
+
+        // This object helps you save/restore the open/close state of each view
+        private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
 
         public SimpleItemRecyclerViewAdapter(List<Resource> transactions) {
             this.transactions = transactions;
@@ -241,6 +349,7 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
+            TBBRApplication app = (TBBRApplication) getApplication();
             holder.mItem = (Transaction) this.transactions.get(position);
             String senderName = holder.mItem.getSender().getName();
             String amount = holder.mItem.getFormattedAmount();
@@ -254,8 +363,13 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             holder.senderName.setText(senderName);
             holder.type.setText(type);
             holder.amount.setText(amount);
-
             holder.memo.setText(memo);
+
+            Picasso.with(FriendshipDetailActivity.this)
+                    .load(holder.mItem.getCreator().getAvatarUrl("normal"))
+                    .placeholder(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+                    .error(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+                    .into(holder.createdByIcon);
 
             holder.createdAtMonth.setText(month);
             holder.createdAtDay.setText(day);
@@ -267,31 +381,58 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             return transactions.size();
         }
 
+        public void removeItem(int position) {
+            transactions.remove(position);
+
+            // notify the item removed by position
+            // to perform recycler view delete animations
+            notifyItemRemoved(position);
+        }
+
+        public void restoreItem(Transaction item, int position) {
+            transactions.add(position, item);
+
+            // notify item added by position
+            notifyItemInserted(position);
+        }
+
         public class ViewHolder extends RecyclerView.ViewHolder {
+            public final RelativeLayout backgroundView;
             public final LinearLayout cardView;
+
             public final TextView senderName;
             public final TextView type;
             public final TextView amount;
             public final TextView memo;
+            public final CircleImageView createdByIcon;
 
             public final TextView createdAtMonth;
             public final TextView createdAtDay;
             public final TextView createdAtYear;
 
+            public final ImageView transactionDeleteIcon;
+
             public Transaction mItem;
 
             public ViewHolder(View view) {
                 super(view);
-                cardView = (LinearLayout) view.findViewById(R.id.transaction_card);
+                transactionDeleteIcon = view.findViewById(R.id.transaction_delete_icon);
+                transactionDeleteIcon.setImageDrawable(
+                    new IconDrawable(FriendshipDetailActivity.this, MaterialIcons.md_delete)
+                            .colorRes(R.color.grey100)
+                            .actionBarSize());
+                backgroundView = view.findViewById(R.id.transaction_delete_view);
+                cardView = view.findViewById(R.id.transaction_card);
 
-                senderName = (TextView) view.findViewById(R.id.transaction_sender_name);
-                type = (TextView) view.findViewById(R.id.transaction_type);
-                amount = (TextView) view.findViewById(R.id.transaction_amount);
-                memo = (TextView) view.findViewById(R.id.transaction_memo);
+                senderName = view.findViewById(R.id.transaction_sender_name);
+                type = view.findViewById(R.id.transaction_type);
+                amount = view.findViewById(R.id.transaction_amount);
+                memo = view.findViewById(R.id.transaction_memo);
+                createdByIcon = view.findViewById(R.id.transaction_created_by_icon);
 
-                createdAtMonth = (TextView) view.findViewById(R.id.vertical_date_month);
-                createdAtDay = (TextView) view.findViewById(R.id.vertical_date_day);
-                createdAtYear = (TextView) view.findViewById(R.id.vertical_date_year);
+                createdAtMonth = view.findViewById(R.id.vertical_date_month);
+                createdAtDay = view.findViewById(R.id.vertical_date_day);
+                createdAtYear = view.findViewById(R.id.vertical_date_year);
             }
         }
     }

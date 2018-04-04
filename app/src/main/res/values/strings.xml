@@ -1,10 +1,12 @@
 <resources>
     <string name="app_name">tbbr</string>
+
     <string name="title_friendship_detail">Friendship Detail</string>
     <string name="title_login">Login</string>
     <string name="title_transaction_create">New Transaction</string>
     <string name="facebook_app_id">556458821173978</string>
-    <string name="base_url">http://tbbr.me/api/</string>
 
     <string name="max_length_memo">140</string>
+
+    <string name="me">Me</string>
 </resources>

@@ -4,33 +4,37 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
+import com.wang.avi.AVLoadingIndicatorView;
+
+import java.util.Arrays;
 
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.DeviceToken;
 import me.tbbr.tbbr.models.Token;
 
+import me.tbbr.tbbr.models.User;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Callback;
 
-/**
- * Created by Maaz on 2016-04-16.
- */
 public class LoginActivity extends AppCompatActivity {
-    private LoginButton loginButton;
-    private ProgressBar loginProgressBar;
+    private AppCompatButton loginButton;
+    private AVLoadingIndicatorView  progressBar;
 
     private CallbackManager callbackManager;
 
@@ -42,14 +46,13 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        loginButton = (LoginButton)findViewById(R.id.fbLoginButton);
-        loginProgressBar = (ProgressBar)findViewById(R.id.loginProgressBar);
-
-        if (loginProgressBar != null) {
-            loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
+        loginButton = findViewById(R.id.fb_login_button);
+        progressBar = findViewById(R.id.friendship_detail_progress_bar);
+        if (progressBar != null) {
+            progressBar.hide();
         }
 
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 loginUserOnServer(loginResult.getAccessToken().getToken());
@@ -66,7 +69,21 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Login attempt failed!", Toast.LENGTH_LONG).show();
             }
         });
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("public_profile", "user_friends"));
+            }
+        });
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e("LoginActivity", "Im Running");
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -78,32 +95,33 @@ public class LoginActivity extends AppCompatActivity {
         APIService service = ((TBBRApplication) getApplication()).getUnauthenticatedApiService();
         Call<Token> loginReq = service.grantToken("facebook_access_token", accessToken);
         loginButton.setVisibility(LoginButton.INVISIBLE);
-        loginProgressBar.setVisibility(ProgressBar.VISIBLE);
+        progressBar.show();
 
         loginReq.enqueue(new Callback<Token>() {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
                 if (response.body() == null) {
-                    Toast.makeText(getApplicationContext(), response.errorBody().toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Failed to login, try again!", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Successfully logged in!", Toast.LENGTH_SHORT).show();
-                    ((TBBRApplication) getApplication()).setUserLoggedIn(response.body());
-
                     // Register the device to the server, if we need to
                     registerDeviceToReceiveNotifications();
 
+                    ((TBBRApplication) getApplication()).setUserLoggedIn(response.body());
                     Intent intent = new Intent(LoginActivity.this, FriendshipListActivity.class);
                     LoginActivity.this.startActivity(intent);
+                    finish();
                 }
             }
 
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                loginProgressBar.setVisibility(ProgressBar.INVISIBLE);
+                Toast.makeText(getApplicationContext(), "Login Failed!", Toast.LENGTH_LONG).show();
+                progressBar.hide();
                 loginButton.setVisibility(LoginButton.VISIBLE);
             }
         });
+
     }
 
     private void registerDeviceToReceiveNotifications() {

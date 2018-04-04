@@ -3,6 +3,7 @@ package me.tbbr.tbbr.models;
 import com.gustavofao.jsonapi.Annotations.Type;
 import com.gustavofao.jsonapi.Models.Resource;
 
+import java.io.Serializable;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,7 +12,7 @@ import java.util.Date;
  * Created by Maaz on 2016-04-20.
  */
 @Type("transactions")
-public class Transaction extends Resource {
+public class Transaction extends Resource implements Serializable {
     private int amount;
     private String type;
     private String memo;
@@ -82,7 +83,10 @@ public class Transaction extends Resource {
         } else {
             return "no memo available";
         }
+    }
 
+    public User getCreator() {
+        return creator;
     }
 
 

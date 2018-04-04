@@ -8,9 +8,6 @@ import com.gustavofao.jsonapi.Models.Resource;
 
 import java.text.NumberFormat;
 
-/**
- * Created by Maaz on 2016-04-19.
- */
 
 @Type("friendships")
 public class Friendship extends Resource {
@@ -23,6 +20,23 @@ public class Friendship extends Resource {
     public User user;
 
     public User friend;
+
+
+    public void removeTransactionFromBalance(Transaction t) {
+        if (t.getSender().getId().equals(user.getId())) {
+            balance -= t.getAmount();
+        } else {
+            balance += t.getAmount();
+        }
+    }
+
+    public void addTransactionToBalance(Transaction t) {
+        if (t.getSender().getId().equals(user.getId())) {
+            balance += t.getAmount();
+        } else {
+            balance -= t.getAmount();
+        }
+    }
 
 
     public User getFriend() {
@@ -39,9 +53,9 @@ public class Friendship extends Resource {
         if (balance == 0) {
             return Color.parseColor("#ECF0F1");
         } else if (balance > 0) {
-            return Color.parseColor("#2ECC71");
+            return Color.parseColor("#2ecc71");
         } else {
-            return Color.parseColor("#E46A6B");
+            return Color.parseColor("#e74c3c");
         }
     }
 

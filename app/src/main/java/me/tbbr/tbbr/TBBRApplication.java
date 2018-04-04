@@ -2,11 +2,14 @@ package me.tbbr.tbbr;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.stetho.Stetho;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
+import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.gustavofao.jsonapi.Retrofit.JSONConverterFactory;
 import com.joanzapata.iconify.Iconify;
@@ -24,72 +27,33 @@ import java.util.List;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Maaz on 2016-04-18.
- */
 public class TBBRApplication extends Application {
+
+    public static String BASE_URL = "http://tbbr.me/api/";
 
     APIService apiService;
     APIService unauthenticatedApiService;
 
     Token loggedInUsersToken;
 
+    User currentUser;
+
     // TODO: Use a hashmap of <friendshipId => Friendship> to make it easier
     // to potentially update friendship cache at a later date.
     List<Resource> friendships;
 
-    public void onCreate() {
-        super.onCreate();
 
-        Iconify.with(new MaterialModule());
-
-        Stetho.initializeWithDefaults(this);
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-
-        Gson converter = new Gson();
-        SharedPreferences preferences = getSharedPreferences("AUTH_PREFERENCES", MODE_PRIVATE);
-
-        Token savedToken = converter.fromJson(preferences.getString("token", ""), Token.class);
-
-        loggedInUsersToken = savedToken;
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addNetworkInterceptor(new StethoInterceptor())
-                .build();
-
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getResources().getString(R.string.base_url))
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
-                .build();
-
-        unauthenticatedApiService = retrofit.create(APIService.class);
-
-        if (savedToken != null) {
-            logUserIn(savedToken);
-        } else {
-            apiService = unauthenticatedApiService;
-        }
-    }
-
-    public void setUserLoggedIn(Token token) {
-        this.loggedInUsersToken = token;
-
-        if (token != null) {
-            logUserIn(token);
-        }
-    }
-
-    private void logUserIn(Token token) {
+    public static APIService createAuthenticatedService(Token token) {
         Interceptor authorizationInterceptor = new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
-                Request newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer " + loggedInUsersToken.getAccessToken()).build();
+                Request newRequest = chain.request().newBuilder().addHeader("Authorization", "Bearer " + token.getAccessToken()).build();
                 return chain.proceed(newRequest);
             }
         };
@@ -102,12 +66,62 @@ public class TBBRApplication extends Application {
 
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(getResources().getString(R.string.base_url))
+                .baseUrl(BASE_URL)
                 .addConverterFactory(JSONConverterFactory.create(User.class, Friendship.class, Transaction.class, DeviceToken.class))
                 .client(client)
                 .build();
 
-        apiService = retrofit.create(APIService.class);
+        return retrofit.create(APIService.class);
+
+    }
+
+    public void onCreate() {
+        super.onCreate();
+
+        Iconify.with(new MaterialModule());
+        Stetho.initializeWithDefaults(this);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addNetworkInterceptor(new StethoInterceptor())
+                .build();
+
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build();
+
+        unauthenticatedApiService = retrofit.create(APIService.class);
+
+
+        Gson converter = new Gson();
+        SharedPreferences preferences = getSharedPreferences("AUTH_PREFERENCES", MODE_PRIVATE);
+
+        Token savedToken = converter.fromJson(preferences.getString("token", ""), Token.class);
+        if (savedToken == null) {
+            apiService = unauthenticatedApiService;
+            return;
+        }
+
+        Log.e("TBBRApplication", "Our saved token is: " + savedToken.getAccessToken());
+        loggedInUsersToken = savedToken;
+
+        logUserIn(savedToken);
+        Log.e("TBBRApplication", "We successfully logged user into our application!");
+    }
+
+    public void setUserLoggedIn(Token token) {
+        this.loggedInUsersToken = token;
+
+        if (token != null) {
+            logUserIn(token);
+        }
+    }
+
+    private void logUserIn(Token token) {
+        apiService = TBBRApplication.createAuthenticatedService(token);
 
         SharedPreferences.Editor editor = getSharedPreferences("AUTH_PREFERENCES", MODE_PRIVATE).edit();
         Gson converter = new Gson();
@@ -139,5 +153,13 @@ public class TBBRApplication extends Application {
 
     public List<Resource> getFriendships() {
         return friendships;
+    }
+
+    public User getCurrentUser() {
+        return currentUser;
+    }
+
+    public void setCurrentUser(Resource currentUser) {
+        this.currentUser = (User) currentUser;
     }
 }
