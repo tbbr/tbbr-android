@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
@@ -113,10 +118,6 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(mainImage);
 
-        int primary = getResources().getColor(R.color.secondaryDark);
-        int secondary = getResources().getColor(R.color.secondaryDark);
-        Slidr.attach(this, primary, secondary);
-
         AVLoadingIndicatorView progressBar = findViewById(R.id.friendship_detail_progress_bar);
         if (progressBar != null) {
             progressBar.show();
@@ -193,8 +194,37 @@ public class FriendshipDetailActivity extends AppCompatActivity {
                 toast.show();
             }
         });
+    }
+
+    private void makeDeleteTransactionRequest(Transaction transaction) {
+        final TBBRApplication app = (TBBRApplication) getApplication();
+        APIService service = app.getAPIService();
+
+        Call<JSONApiObject> transactionDeleteReq = service.deleteTransaction(transaction.getId());
+
+
+        transactionDeleteReq.enqueue(new Callback<JSONApiObject>() {
+            @Override
+            public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
+                Log.e("TEST", String.valueOf(response.code()));
+                if (response.body() == null) {
+                    handleNullBody(response);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Transaction successfully deleted!", Toast.LENGTH_LONG).show();
+                    makeFriendshipRequest();
+                    makeTransactionRequest();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JSONApiObject> call, Throwable t) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Unable to delete transaction!", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -223,6 +253,9 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
         private List<Resource> transactions;
 
+        // This object helps you save/restore the open/close state of each view
+        private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
+
         public SimpleItemRecyclerViewAdapter(List<Resource> transactions) {
             this.transactions = transactions;
         }
@@ -237,6 +270,8 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = (Transaction) this.transactions.get(position);
+            viewBinderHelper.bind(holder.swipeRevealLayout, holder.mItem.getId());
+            viewBinderHelper.setOpenOnlyOne(true);
             String senderName = holder.mItem.getSender().getName();
             String amount = holder.mItem.getFormattedAmount();
             String type = "paid";
@@ -255,6 +290,20 @@ public class FriendshipDetailActivity extends AppCompatActivity {
             holder.createdAtMonth.setText(month);
             holder.createdAtDay.setText(day);
             holder.createdAtYear.setText(year);
+
+            if (holder.deleteBtn != null) {
+//                holder.deleteBtn.setEnabled(true);
+                holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.e("BTN", "Delete btn clicked");
+//                        Toast.makeText(getApplicationContext(), "Deleting Transaction...", Toast.LENGTH_SHORT).show();
+//                        makeDeleteTransactionRequest(holder.mItem);
+                    }
+                });
+            } else {
+                Log.e("TEST", "I did not get attached");
+            }
         }
 
         @Override
@@ -263,6 +312,8 @@ public class FriendshipDetailActivity extends AppCompatActivity {
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {
+            public final SwipeRevealLayout swipeRevealLayout;
+            public final AppCompatButton deleteBtn;
             public final LinearLayout cardView;
             public final TextView senderName;
             public final TextView type;
@@ -277,16 +328,18 @@ public class FriendshipDetailActivity extends AppCompatActivity {
 
             public ViewHolder(View view) {
                 super(view);
-                cardView = (LinearLayout) view.findViewById(R.id.transaction_card);
+                swipeRevealLayout = view.findViewById(R.id.transaction_card_swipe_reveal);
+                deleteBtn = findViewById(R.id.transaction_delete_btn);
+                cardView = view.findViewById(R.id.transaction_card);
 
-                senderName = (TextView) view.findViewById(R.id.transaction_sender_name);
-                type = (TextView) view.findViewById(R.id.transaction_type);
-                amount = (TextView) view.findViewById(R.id.transaction_amount);
-                memo = (TextView) view.findViewById(R.id.transaction_memo);
+                senderName = view.findViewById(R.id.transaction_sender_name);
+                type = view.findViewById(R.id.transaction_type);
+                amount = view.findViewById(R.id.transaction_amount);
+                memo = view.findViewById(R.id.transaction_memo);
 
-                createdAtMonth = (TextView) view.findViewById(R.id.vertical_date_month);
-                createdAtDay = (TextView) view.findViewById(R.id.vertical_date_day);
-                createdAtYear = (TextView) view.findViewById(R.id.vertical_date_year);
+                createdAtMonth = view.findViewById(R.id.vertical_date_month);
+                createdAtDay = view.findViewById(R.id.vertical_date_day);
+                createdAtYear = view.findViewById(R.id.vertical_date_year);
             }
         }
     }

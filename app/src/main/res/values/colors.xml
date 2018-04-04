@@ -5,10 +5,10 @@
     <!--<color name="colorAccent">#98D31C</color>-->
 
     // Primary Color
-    <color name="primaryBase">#98D31C</color>
+    <color name="primaryBase">#2ecc71</color>
     <color name="primaryLight">#AEDF46</color>
     <color name="primaryLighter">#C8F171</color>
-    <color name="primaryDark">#75A70D</color>
+    <color name="primaryDark">#27ae60</color>
     <color name="primaryDarker">#598300</color>
 
     // Secondary Color
@@ -28,6 +28,9 @@
     <color name="grey200">#EEEEEE</color>
     <color name="grey100">#F5F5F5</color>
     <color name="grey50">#FAFAFA</color>
+
+
+    <color name="danger">#e74c3c</color>
 
 
 </resources>
