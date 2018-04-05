@@ -36,6 +36,6 @@ public interface APIService {
     @DELETE("transactions/{id}")
     Call<JSONApiObject> deleteTransaction(@Path("id") String transactionId);
 
-    @GET("users")
-    Call<JSONApiObject> getUser(@Query("id") String userId);
+    @GET("users/{id}")
+    Call<JSONApiObject> getUser(@Path("id") String userId);
 }
