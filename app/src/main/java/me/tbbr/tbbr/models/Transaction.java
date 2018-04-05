@@ -1,9 +1,12 @@
 package me.tbbr.tbbr.models;
 
+import android.graphics.Color;
+
 import com.gustavofao.jsonapi.Annotations.Type;
 import com.gustavofao.jsonapi.Models.Resource;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,12 +72,26 @@ public class Transaction extends Resource implements Serializable {
         return sender;
     }
 
-    public String getFormattedAmount() {
+    public String getFormattedAmount(String curUserId) {
         double amount = ((double) this.amount) / 100;
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
         String moneyString = formatter.format(amount);
 
+        if (sender.getId().equals(curUserId)) {
+            moneyString = "+ " + moneyString;
+        } else {
+            moneyString = "- " + moneyString;
+        }
+
         return moneyString;
+    }
+
+    public int getAmountColor(String curUserId) {
+        if (sender.getId().equals(curUserId)) {
+            return Color.parseColor("#2ecc71");
+        } else {
+            return Color.parseColor("#e74c3c");
+        }
     }
 
     public String getMemo() {

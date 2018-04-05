@@ -219,7 +219,6 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
                 if (response.body() == null) {
                     handleNullBody(response);
                 } else {
-                    Toast.makeText(getApplicationContext(), "Transaction hard deleted!", Toast.LENGTH_LONG).show();
                     makeFriendshipRequest();
                 }
             }
@@ -288,7 +287,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             }
 
 
-            String amount = deletedTransaction.getFormattedAmount();
+            String amount = deletedTransaction.getFormattedAmount(app.getLoggedInUsersToken().getUserId());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
             // remove the item from recycler view
@@ -346,9 +345,10 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
+            TBBRApplication app = (TBBRApplication) getApplication();
             holder.mItem = (Transaction) this.transactions.get(position);
             String senderName = holder.mItem.getSender().getName();
-            String amount = holder.mItem.getFormattedAmount();
+            String amount = holder.mItem.getFormattedAmount(app.getLoggedInUsersToken().getUserId());
             String type = "paid";
             String memo = holder.mItem.getMemo();
 
@@ -359,13 +359,14 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             holder.senderName.setText(senderName);
             holder.type.setText(type);
             holder.amount.setText(amount);
+            holder.amount.setTextColor(holder.mItem.getAmountColor(app.getLoggedInUsersToken().getUserId()));
             holder.memo.setText(memo);
 
-            Picasso.with(FriendshipDetailActivity.this)
-                    .load(holder.mItem.getCreator().getAvatarUrl("normal"))
-                    .placeholder(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
-                    .error(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
-                    .into(holder.createdByIcon);
+//            Picasso.with(FriendshipDetailActivity.this)
+//                    .load(holder.mItem.getCreator().getAvatarUrl("normal"))
+//                    .placeholder(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+//                    .error(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+//                    .into(holder.createdByIcon);
 
             holder.createdAtMonth.setText(month + " " + day);
             holder.createdAtYear.setText(year);
@@ -399,7 +400,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             public final TextView type;
             public final TextView amount;
             public final TextView memo;
-            public final CircleImageView createdByIcon;
+//            public final CircleImageView createdByIcon;
 
             public final TextView createdAtMonth;
             public final TextView createdAtYear;
@@ -422,7 +423,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
                 type = view.findViewById(R.id.transaction_type);
                 amount = view.findViewById(R.id.transaction_amount);
                 memo = view.findViewById(R.id.transaction_memo);
-                createdByIcon = view.findViewById(R.id.transaction_created_by_icon);
+//                createdByIcon = view.findViewById(R.id.transaction_created_by_icon);
 
                 createdAtMonth = view.findViewById(R.id.vertical_date_month);
                 createdAtYear = view.findViewById(R.id.vertical_date_year);
