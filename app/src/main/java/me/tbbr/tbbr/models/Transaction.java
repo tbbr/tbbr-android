@@ -5,8 +5,9 @@ import android.graphics.Color;
 import com.gustavofao.jsonapi.Annotations.Type;
 import com.gustavofao.jsonapi.Models.Resource;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -106,6 +107,10 @@ public class Transaction extends Resource implements Serializable {
         return creator;
     }
 
+
+    public DateTime getCreatedAt() {
+        return DateTime.parse(createdAt);
+    }
 
     public String getCreatedAtMonth() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");

@@ -41,6 +41,8 @@ import me.tbbr.tbbr.models.Transaction;
 import com.wang.avi.AVLoadingIndicatorView;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 
+import org.joda.time.DateTime;
+
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -235,6 +237,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("FINISH", "Finishing up activity");
         finish();
         return true;
     }
@@ -245,6 +248,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
             Intent loginIntent = new Intent(FriendshipDetailActivity.this, LoginActivity.class);
             FriendshipDetailActivity.this.startActivity(loginIntent);
+            Log.e("FINISH", "Finishing up activity");
             FriendshipDetailActivity.this.finish();
         }
     }
@@ -265,6 +269,28 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
     }
 
+    private boolean checkTransactionDeletion(Transaction t, int position) {
+        TBBRApplication app = (TBBRApplication) getApplication();
+        DateTime curDeleteLimit = DateTime.now().minusHours(1);
+        Log.e("TEST", t.getCreatedAt().toString());
+        // If the currently logged in user is not the creator of the transaction, do not try to delete it
+        // and let them know they cannot delete it
+        if (!t.getCreator().getId().equals(app.getLoggedInUsersToken().getUserId())) {
+            Toast.makeText(getApplicationContext(), "You can only delete transactions you've created!", Toast.LENGTH_LONG).show();
+            // Resets the item to it's unswiped position
+            mAdapter.notifyItemChanged(position);
+            return true;
+        } else if (t.getCreatedAt().isBefore(curDeleteLimit)) {
+            Toast.makeText(getApplicationContext(), "You cannot delete a transaction that's over an hour old!", Toast.LENGTH_LONG).show();
+            // Resets the item to it's unswiped position
+            mAdapter.notifyItemChanged(position);
+            return true;
+        }
+
+        return false;
+
+    }
+
     /**
      * callback when recycler view is swiped
      * item will be removed on swiped
@@ -277,15 +303,9 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             // backup of removed item for undo purpose
             final Transaction deletedTransaction = (Transaction) transactions.get(viewHolder.getAdapterPosition());
 
-            // If the currently logged in user is not the creator of the transaction, do not try to delete it
-            // and let them know they cannot delete it
-            if (!deletedTransaction.getCreator().getId().equals(app.getLoggedInUsersToken().getUserId())) {
-                Toast.makeText(getApplicationContext(), "You can only delete transactions you've created!", Toast.LENGTH_LONG).show();
-                // Resets the item to it's unswiped position
-                mAdapter.notifyItemChanged(position);
+            if (checkTransactionDeletion(deletedTransaction, position)) {
                 return;
             }
-
 
             String amount = deletedTransaction.getFormattedAmount(app.getLoggedInUsersToken().getUserId());
             final int deletedIndex = viewHolder.getAdapterPosition();
