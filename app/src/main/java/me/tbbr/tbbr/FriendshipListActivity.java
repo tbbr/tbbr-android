@@ -168,9 +168,6 @@ public class FriendshipListActivity extends AppCompatActivity {
                     RecyclerView recyclerView = findViewById(R.id.friendship_list);
                     assert recyclerView != null;
 
-                    if (recyclerView.getItemDecorationAt(0) == null) {
-                        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipListActivity.this).build());
-                    }
                     app.setFriendships(response.body().getData());
                     setupRecyclerView(recyclerView, app.getFriendships());
                 }

@@ -44,6 +44,7 @@
                 <de.hdodenhof.circleimageview.CircleImageView
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/friendship_page_main_img"
+                    android:layout_marginTop="30dp"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center" />
@@ -63,10 +64,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
-
     </android.support.design.widget.AppBarLayout>
 
 
@@ -90,7 +90,7 @@
         android:layout_margin="@dimen/fab_margin"
         android:backgroundTint="@color/primaryDark"
         app:layout_anchor="@+id/transaction_list"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchorGravity="bottom|end" />
 
     <RelativeLayout
         android:layout_width="match_parent"
