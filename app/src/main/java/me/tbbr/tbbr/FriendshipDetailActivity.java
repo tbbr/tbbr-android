@@ -2,12 +2,12 @@ package me.tbbr.tbbr;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,15 +25,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.facebook.login.LoginManager;
 import com.gustavofao.jsonapi.Models.JSONApiObject;
 import com.gustavofao.jsonapi.Models.Resource;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
-import com.r0adkll.slidr.Slidr;
 import com.squareup.picasso.Picasso;
+
+import jp.wasabeef.picasso.transformations.ColorFilterTransformation;
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.helpers.RecyclerItemTouchHelper;
 import me.tbbr.tbbr.models.Friendship;
@@ -41,6 +40,8 @@ import me.tbbr.tbbr.models.Transaction;
 
 import com.wang.avi.AVLoadingIndicatorView;
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
+
+import org.joda.time.DateTime;
 
 import java.util.List;
 
@@ -112,6 +113,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
         Picasso.with(this)
                 .load(friendship.getFriend().getAvatarUrl("normal"))
                 .transform(new BlurTransformation(this, 25))
+                .transform(new ColorFilterTransformation(getResources().getColor(R.color.blackTransparent)))
                 .placeholder(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(backdrop);
@@ -161,7 +163,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
                     RecyclerView recyclerView = findViewById(R.id.transaction_list);
                     assert recyclerView != null;
 
-                    if (recyclerView.getItemDecorationAt(0) == null) {
+                    if (recyclerView.getItemDecorationCount() == 0) {
                         recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipDetailActivity.this).build());
                     }
                     transactions = response.body().getData();
@@ -219,7 +221,6 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
                 if (response.body() == null) {
                     handleNullBody(response);
                 } else {
-                    Toast.makeText(getApplicationContext(), "Transaction hard deleted!", Toast.LENGTH_LONG).show();
                     makeFriendshipRequest();
                 }
             }
@@ -236,6 +237,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Log.e("FINISH", "Finishing up activity");
         finish();
         return true;
     }
@@ -246,6 +248,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
             Intent loginIntent = new Intent(FriendshipDetailActivity.this, LoginActivity.class);
             FriendshipDetailActivity.this.startActivity(loginIntent);
+            Log.e("FINISH", "Finishing up activity");
             FriendshipDetailActivity.this.finish();
         }
     }
@@ -266,6 +269,28 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
     }
 
+    private boolean checkTransactionDeletion(Transaction t, int position) {
+        TBBRApplication app = (TBBRApplication) getApplication();
+        DateTime curDeleteLimit = DateTime.now().minusHours(1);
+        Log.e("TEST", t.getCreatedAt().toString());
+        // If the currently logged in user is not the creator of the transaction, do not try to delete it
+        // and let them know they cannot delete it
+        if (!t.getCreator().getId().equals(app.getLoggedInUsersToken().getUserId())) {
+            Toast.makeText(getApplicationContext(), "You can only delete transactions you've created!", Toast.LENGTH_LONG).show();
+            // Resets the item to it's unswiped position
+            mAdapter.notifyItemChanged(position);
+            return true;
+        } else if (t.getCreatedAt().isBefore(curDeleteLimit)) {
+            Toast.makeText(getApplicationContext(), "You cannot delete a transaction that's over an hour old!", Toast.LENGTH_LONG).show();
+            // Resets the item to it's unswiped position
+            mAdapter.notifyItemChanged(position);
+            return true;
+        }
+
+        return false;
+
+    }
+
     /**
      * callback when recycler view is swiped
      * item will be removed on swiped
@@ -278,17 +303,11 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             // backup of removed item for undo purpose
             final Transaction deletedTransaction = (Transaction) transactions.get(viewHolder.getAdapterPosition());
 
-            // If the currently logged in user is not the creator of the transaction, do not try to delete it
-            // and let them know they cannot delete it
-            if (!deletedTransaction.getCreator().getId().equals(app.getLoggedInUsersToken().getUserId())) {
-                Toast.makeText(getApplicationContext(), "You can only delete transactions you've created!", Toast.LENGTH_LONG).show();
-                // Resets the item to it's unswiped position
-                mAdapter.notifyItemChanged(position);
+            if (checkTransactionDeletion(deletedTransaction, position)) {
                 return;
             }
 
-
-            String amount = deletedTransaction.getFormattedAmount();
+            String amount = deletedTransaction.getFormattedAmount(app.getLoggedInUsersToken().getUserId());
             final int deletedIndex = viewHolder.getAdapterPosition();
 
             // remove the item from recycler view
@@ -333,9 +352,6 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
 
         private List<Resource> transactions;
 
-        // This object helps you save/restore the open/close state of each view
-        private final ViewBinderHelper viewBinderHelper = new ViewBinderHelper();
-
         public SimpleItemRecyclerViewAdapter(List<Resource> transactions) {
             this.transactions = transactions;
         }
@@ -352,7 +368,7 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             TBBRApplication app = (TBBRApplication) getApplication();
             holder.mItem = (Transaction) this.transactions.get(position);
             String senderName = holder.mItem.getSender().getName();
-            String amount = holder.mItem.getFormattedAmount();
+            String amount = holder.mItem.getFormattedAmount(app.getLoggedInUsersToken().getUserId());
             String type = "paid";
             String memo = holder.mItem.getMemo();
 
@@ -363,16 +379,16 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             holder.senderName.setText(senderName);
             holder.type.setText(type);
             holder.amount.setText(amount);
+            holder.amount.setTextColor(holder.mItem.getAmountColor(app.getLoggedInUsersToken().getUserId()));
             holder.memo.setText(memo);
 
-            Picasso.with(FriendshipDetailActivity.this)
-                    .load(holder.mItem.getCreator().getAvatarUrl("normal"))
-                    .placeholder(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
-                    .error(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
-                    .into(holder.createdByIcon);
+//            Picasso.with(FriendshipDetailActivity.this)
+//                    .load(holder.mItem.getCreator().getAvatarUrl("normal"))
+//                    .placeholder(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+//                    .error(FriendshipDetailActivity.this.getResources().getDrawable(R.drawable.default_profile_picture))
+//                    .into(holder.createdByIcon);
 
-            holder.createdAtMonth.setText(month);
-            holder.createdAtDay.setText(day);
+            holder.createdAtMonth.setText(month + " " + day);
             holder.createdAtYear.setText(year);
         }
 
@@ -404,10 +420,9 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
             public final TextView type;
             public final TextView amount;
             public final TextView memo;
-            public final CircleImageView createdByIcon;
+//            public final CircleImageView createdByIcon;
 
             public final TextView createdAtMonth;
-            public final TextView createdAtDay;
             public final TextView createdAtYear;
 
             public final ImageView transactionDeleteIcon;
@@ -428,10 +443,9 @@ public class FriendshipDetailActivity extends AppCompatActivity implements Recyc
                 type = view.findViewById(R.id.transaction_type);
                 amount = view.findViewById(R.id.transaction_amount);
                 memo = view.findViewById(R.id.transaction_memo);
-                createdByIcon = view.findViewById(R.id.transaction_created_by_icon);
+//                createdByIcon = view.findViewById(R.id.transaction_created_by_icon);
 
                 createdAtMonth = view.findViewById(R.id.vertical_date_month);
-                createdAtDay = view.findViewById(R.id.vertical_date_day);
                 createdAtYear = view.findViewById(R.id.vertical_date_year);
             }
         }

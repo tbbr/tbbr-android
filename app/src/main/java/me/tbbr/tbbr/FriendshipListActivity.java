@@ -24,6 +24,7 @@ import com.gustavofao.jsonapi.Models.Resource;
 import com.squareup.picasso.Picasso;
 
 import jp.wasabeef.picasso.transformations.BlurTransformation;
+import jp.wasabeef.picasso.transformations.ColorFilterTransformation;
 import me.tbbr.tbbr.api.APIService;
 import me.tbbr.tbbr.models.Friendship;
 
@@ -75,6 +76,7 @@ public class FriendshipListActivity extends AppCompatActivity {
         TBBRApplication app = (TBBRApplication) getApplication();
         User curUser = app.getCurrentUser();
         if (curUser == null) {
+            Log.e("TEST", "curUserId: " + app.getLoggedInUsersToken().getUserId());
             Call<JSONApiObject> curUserReq = app.apiService.getUser(app.getLoggedInUsersToken().getUserId());
             try {
                 curUserReq.enqueue(new Callback<JSONApiObject>() {
@@ -83,7 +85,7 @@ public class FriendshipListActivity extends AppCompatActivity {
                         if (response.body() == null) {
 
                             if (response.raw().code() == 401) {
-                                Toast.makeText(getApplicationContext(), "Failed to get current user, try logging in again!" + String.valueOf(response.code()), Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Failed to log you in automatically, try logging in again!", Toast.LENGTH_LONG).show();
                                 LoginManager.getInstance().logOut();
 
                                 Intent loginIntent = new Intent(FriendshipListActivity.this, LoginActivity.class);
@@ -120,10 +122,12 @@ public class FriendshipListActivity extends AppCompatActivity {
         TextView nameView = header.findViewById(R.id.nav_user_name);
         ImageView backdrop = header.findViewById(R.id.nav_image_backdrop);
 
+        Log.e("TEST", "Current username: " + curUser.getName());
         nameView.setText(curUser.getName());
         Picasso.with(this)
                 .load(curUser.getAvatarUrl("normal"))
                 .transform(new BlurTransformation(this, 25))
+                .transform(new ColorFilterTransformation(getResources().getColor(R.color.blackTransparent)))
                 .placeholder(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .error(this.getResources().getDrawable(R.drawable.default_profile_picture))
                 .into(backdrop);
@@ -138,7 +142,6 @@ public class FriendshipListActivity extends AppCompatActivity {
     }
 
 
-
     private void makeFriendshipRequest() {
         final TBBRApplication app = (TBBRApplication) getApplication();
         APIService service = app.getAPIService();
@@ -151,10 +154,10 @@ public class FriendshipListActivity extends AppCompatActivity {
             public void onResponse(Call<JSONApiObject> call, Response<JSONApiObject> response) {
 
                 if (response.body() == null) {
-                    Toast err = Toast.makeText(getApplicationContext(), response.errorBody().toString(), Toast.LENGTH_LONG);
-                    err.show();
 
                     if (response.raw().code() == 401) {
+                        Toast err = Toast.makeText(getApplicationContext(), "Couldn't automatically log you in, please login again!", Toast.LENGTH_LONG);
+                        err.show();
                         LoginManager.getInstance().logOut();
 
                         Intent loginIntent = new Intent(FriendshipListActivity.this, LoginActivity.class);
@@ -168,9 +171,6 @@ public class FriendshipListActivity extends AppCompatActivity {
                     RecyclerView recyclerView = findViewById(R.id.friendship_list);
                     assert recyclerView != null;
 
-                    if (recyclerView.getItemDecorationAt(0) == null) {
-                        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(FriendshipListActivity.this).build());
-                    }
                     app.setFriendships(response.body().getData());
                     setupRecyclerView(recyclerView, app.getFriendships());
                 }
@@ -178,7 +178,7 @@ public class FriendshipListActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JSONApiObject> call, Throwable t) {
-                Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getApplicationContext(), "Failed to get response", Toast.LENGTH_LONG);
                 toast.show();
             }
         });
